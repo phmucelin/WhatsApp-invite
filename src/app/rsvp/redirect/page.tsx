@@ -7,7 +7,14 @@ export default function RsvpRedirectPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isSearching, setIsSearching] = useState(true);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<{
+    id: string;
+    name: string;
+    phoneNumber: string;
+    eventTitle: string;
+    eventDate: string;
+    rsvpStatus: string;
+  }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
 

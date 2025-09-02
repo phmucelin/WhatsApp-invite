@@ -60,30 +60,6 @@ export default function AdminGuestsPage() {
     loadGuests();
   }, [loadGuests]);
 
-  async function loadEvents() {
-    try {
-      const response = await fetch("/api/events/list");
-      if (response.ok) {
-        const data = await response.json();
-        setEvents(data.events);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar eventos:", error);
-    }
-  }
-
-  function handleFilterChange() {
-    loadGuests();
-  }
-
-  function clearFilters() {
-    setNameFilter("");
-    setPhoneFilter("");
-    setEventFilter("");
-    setStatusFilter("");
-    loadGuests();
-  }
-
   function getStatusColor(status: string) {
     switch (status) {
       case "CONFIRMED": return "text-green-600 bg-green-100";
@@ -186,13 +162,19 @@ export default function AdminGuestsPage() {
           {/* Botões de Ação */}
           <div className="flex gap-3 mt-4">
             <button
-              onClick={handleFilterChange}
+              onClick={loadGuests}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Aplicar Filtros
             </button>
             <button
-              onClick={clearFilters}
+              onClick={() => {
+                setNameFilter("");
+                setPhoneFilter("");
+                setEventFilter("");
+                setStatusFilter("");
+                loadGuests();
+              }}
               className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
               Limpar Filtros

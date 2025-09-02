@@ -27,7 +27,7 @@ export async function GET() {
     const eventsWithGuestCount = events.map((event: {
       id: string;
       title: string;
-      date: string;
+      date: Date;
       location: string;
       _count: { guests: number };
     }) => ({
