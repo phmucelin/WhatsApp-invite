@@ -1,0 +1,78 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { parse } from "csv-parse/sync";
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const formData = await request.formData();
+    const file = formData.get("file") as File;
+
+    if (!file) {
+      return new NextResponse("No file uploaded", { status: 400 });
+    }
+
+    const fileContent = await file.text();
+    const records = parse(fileContent, {
+      columns: true,
+      skip_empty_lines: true,
+    });
+
+    if (!Array.isArray(records) || records.length === 0) {
+      return new NextResponse("Invalid CSV format", { status: 400 });
+    }
+
+    // Validar se o CSV tem as colunas necessárias
+    const requiredColumns = ["NOME", "NUMERO"];
+    const hasRequiredColumns = requiredColumns.every((column) =>
+      Object.keys(records[0]).includes(column)
+    );
+
+    if (!hasRequiredColumns) {
+      return new NextResponse(
+        "CSV must have NOME and NUMERO columns",
+        { status: 400 }
+      );
+    }
+
+    // Processar os contatos em lote
+    const contacts = records.map((record: any) => ({
+      name: record.NOME.trim(),
+      phoneNumber: record.NUMERO.trim().replace(/\D/g, ""), // Remove caracteres não numéricos
+    }));
+
+    // Inserir contatos no banco de dados
+    const result = await prisma.$transaction(
+      contacts.map((contact) =>
+        prisma.guest.upsert({
+          where: {
+            phoneNumber_eventId: {
+              phoneNumber: contact.phoneNumber,
+              eventId: "placeholder", // Será atualizado quando o evento for criado
+            },
+          },
+          update: {
+            name: contact.name,
+          },
+          create: {
+            name: contact.name,
+            phoneNumber: contact.phoneNumber,
+            eventId: "placeholder", // Será atualizado quando o evento for criado
+          },
+        })
+      )
+    );
+
+    return NextResponse.json({ count: result.length });
+  } catch (error) {
+    console.error("[CONTACTS_UPLOAD]", error);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+} 
