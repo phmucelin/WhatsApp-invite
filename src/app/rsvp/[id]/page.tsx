@@ -2,12 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, X, Calendar, MapPin, User } from "lucide-react";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
 interface Guest {
   id: string;
@@ -33,16 +27,21 @@ export default function RsvpPage() {
   useEffect(() => {
     async function loadGuest() {
       try {
+        console.log("[RSVP] Carregando convidado:", params.id);
         const response = await fetch(`/api/rsvp/${params.id}`);
+        console.log("[RSVP] Resposta da API:", response.status);
+        
         if (!response.ok) {
           throw new Error("Convidado não encontrado");
         }
+        
         const data = await response.json();
+        console.log("[RSVP] Dados recebidos:", data);
         setGuest(data);
         setHasResponded(data.rsvpStatus !== "WAITING");
       } catch (error) {
         console.error("[RSVP_LOAD]", error);
-        toast.error("Erro ao carregar convite");
+        alert("Erro ao carregar convite: " + error);
       } finally {
         setIsLoading(false);
       }
@@ -72,13 +71,13 @@ export default function RsvpPage() {
       setGuest(prev => prev ? { ...prev, rsvpStatus: status } : null);
       
       if (status === "CONFIRMED") {
-        toast.success("Presença confirmada! Obrigado!");
+        alert("Presença confirmada! Obrigado!");
       } else {
-        toast.success("Obrigado pela resposta!");
+        alert("Obrigado pela resposta!");
       }
     } catch (error) {
       console.error("[RSVP_UPDATE]", error);
-      toast.error("Erro ao confirmar presença");
+      alert("Erro ao confirmar presença: " + error);
     } finally {
       setIsLoading(false);
     }
@@ -86,10 +85,18 @@ export default function RsvpPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-lg">Carregando convite...</p>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ 
+            width: "50px", 
+            height: "50px", 
+            border: "3px solid #f3f3f3", 
+            borderTop: "3px solid #3498db", 
+            borderRadius: "50%", 
+            animation: "spin 1s linear infinite",
+            margin: "0 auto 20px"
+          }}></div>
+          <p style={{ fontSize: "18px" }}>Carregando convite...</p>
         </div>
       </div>
     );
@@ -97,10 +104,12 @@ export default function RsvpPage() {
 
   if (!guest) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Convite não encontrado</h1>
-          <p className="text-gray-600">Este convite não existe ou foi removido.</p>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ textAlign: "center" }}>
+          <h1 style={{ fontSize: "24px", fontWeight: "bold", color: "#dc2626", marginBottom: "16px" }}>
+            Convite não encontrado
+          </h1>
+          <p style={{ color: "#4b5563" }}>Este convite não existe ou foi removido.</p>
         </div>
       </div>
     );
@@ -108,112 +117,194 @@ export default function RsvpPage() {
 
   if (hasResponded) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <CardTitle className="text-2xl">
-              {guest.rsvpStatus === "CONFIRMED" ? "✅ Presença Confirmada!" : "❌ Presença Declinada"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-lg mb-4">
-              Obrigado pela resposta, <strong>{guest.name}</strong>!
-            </p>
-            <p className="text-gray-600">
-              {guest.rsvpStatus === "CONFIRMED" 
-                ? "Estamos ansiosos para sua presença no evento!" 
-                : "Sentimos muito que não possa comparecer. Esperamos vê-lo em breve!"}
-            </p>
-          </CardContent>
-        </Card>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}>
+        <div style={{ 
+          background: "white", 
+          borderRadius: "8px", 
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", 
+          padding: "24px", 
+          maxWidth: "400px",
+          textAlign: "center"
+        }}>
+          <h2 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "16px" }}>
+            {guest.rsvpStatus === "CONFIRMED" ? "✅ Presença Confirmada!" : "❌ Presença Declinada"}
+          </h2>
+          <p style={{ fontSize: "18px", marginBottom: "16px" }}>
+            Obrigado pela resposta, <strong>{guest.name}</strong>!
+          </p>
+          <p style={{ color: "#4b5563" }}>
+            {guest.rsvpStatus === "CONFIRMED" 
+              ? "Estamos ansiosos para sua presença no evento!" 
+              : "Sentimos muito que não possa comparecer. Esperamos vê-lo em breve!"}
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="max-w-2xl mx-auto">
-        <Card className="shadow-xl">
-          <CardHeader className="text-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
-            <CardTitle className="text-3xl">🎉 Convite Especial</CardTitle>
-            <p className="text-blue-100 mt-2">Você está convidado(a) para</p>
-          </CardHeader>
+    <div style={{ 
+      minHeight: "100vh", 
+      background: "linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)", 
+      padding: "16px" 
+    }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <div style={{ 
+          background: "white", 
+          borderRadius: "8px", 
+          boxShadow: "0 20px 25px rgba(0, 0, 0, 0.1)", 
+          overflow: "hidden"
+        }}>
+          <div style={{ 
+            background: "linear-gradient(90deg, #2563eb 0%, #4f46e5 100%)", 
+            color: "white", 
+            padding: "32px", 
+            textAlign: "center" 
+          }}>
+            <h1 style={{ fontSize: "32px", fontWeight: "bold", marginBottom: "8px" }}>🎉 Convite Especial</h1>
+            <p style={{ color: "#bfdbfe", fontSize: "18px" }}>Você está convidado(a) para</p>
+          </div>
           
-          <CardContent className="p-8">
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-800 mb-4">{guest.event.title}</h1>
-              <p className="text-lg text-gray-600 mb-6">{guest.event.description}</p>
+          <div style={{ padding: "32px" }}>
+            <div style={{ textAlign: "center", marginBottom: "32px" }}>
+              <h2 style={{ fontSize: "36px", fontWeight: "bold", color: "#1f2937", marginBottom: "16px" }}>
+                {guest.event.title}
+              </h2>
+              <p style={{ fontSize: "18px", color: "#4b5563", marginBottom: "24px" }}>
+                {guest.event.description}
+              </p>
             </div>
 
             {guest.event.imageUrl && (
-              <div className="text-center mb-8">
+              <div style={{ textAlign: "center", marginBottom: "32px" }}>
                 <img 
                   src={guest.event.imageUrl} 
                   alt="Convite" 
-                  className="max-w-full h-auto rounded-lg shadow-lg mx-auto"
+                  style={{ 
+                    maxWidth: "100%", 
+                    height: "auto", 
+                    borderRadius: "8px", 
+                    boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1)"
+                  }}
                 />
               </div>
             )}
 
-            <div className="grid gap-6 mb-8">
-              <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
-                <Calendar className="h-6 w-6 text-blue-600" />
+            <div style={{ marginBottom: "32px" }}>
+              <div style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "12px", 
+                padding: "16px", 
+                backgroundColor: "#eff6ff", 
+                borderRadius: "8px", 
+                marginBottom: "16px"
+              }}>
+                <span style={{ fontSize: "24px" }}>📅</span>
                 <div>
-                  <p className="font-semibold text-gray-800">Data e Horário</p>
-                  <p className="text-gray-600">
-                    {format(new Date(guest.event.date), "PPP 'às' p", { locale: ptBR })}
+                  <p style={{ fontWeight: "600", color: "#1f2937" }}>Data e Horário</p>
+                  <p style={{ color: "#4b5563" }}>
+                    {new Date(guest.event.date).toLocaleDateString('pt-BR', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-                <MapPin className="h-6 w-6 text-green-600" />
+              <div style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "12px", 
+                padding: "16px", 
+                backgroundColor: "#f0fdf4", 
+                borderRadius: "8px", 
+                marginBottom: "16px"
+              }}>
+                <span style={{ fontSize: "24px" }}>📍</span>
                 <div>
-                  <p className="font-semibold text-gray-800">Local</p>
-                  <p className="text-gray-600">{guest.event.location}</p>
+                  <p style={{ fontWeight: "600", color: "#1f2937" }}>Local</p>
+                  <p style={{ color: "#4b5563" }}>{guest.event.location}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-lg">
-                <User className="h-6 w-6 text-purple-600" />
+              <div style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "12px", 
+                padding: "16px", 
+                backgroundColor: "#faf5ff", 
+                borderRadius: "8px"
+              }}>
+                <span style={{ fontSize: "24px" }}>👤</span>
                 <div>
-                  <p className="font-semibold text-gray-800">Convidado</p>
-                  <p className="text-gray-600">{guest.name}</p>
+                  <p style={{ fontWeight: "600", color: "#1f2937" }}>Convidado</p>
+                  <p style={{ color: "#4b5563" }}>{guest.name}</p>
                 </div>
               </div>
             </div>
 
-            <div className="text-center">
-              <p className="text-lg font-semibold text-gray-800 mb-6">
+            <div style={{ textAlign: "center" }}>
+              <p style={{ fontSize: "18px", fontWeight: "600", color: "#1f2937", marginBottom: "24px" }}>
                 Confirme sua presença:
               </p>
               
-              <div className="flex gap-4 justify-center">
-                <Button
-                  size="lg"
-                  className="bg-green-600 hover:bg-green-700 px-8 py-3 text-lg"
+              <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
+                <button
+                  style={{
+                    background: "#16a34a",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    padding: "12px 24px",
+                    fontSize: "18px",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px"
+                  }}
                   onClick={() => handleRsvp("CONFIRMED")}
                   disabled={isLoading}
                 >
-                  <Check className="h-5 w-5 mr-2" />
-                  Sim, Confirmar Presença
-                </Button>
+                  ✅ Sim, Confirmar Presença
+                </button>
                 
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-red-300 text-red-600 hover:bg-red-50 px-8 py-3 text-lg"
+                <button
+                  style={{
+                    background: "transparent",
+                    color: "#dc2626",
+                    border: "2px solid #fca5a5",
+                    borderRadius: "8px",
+                    padding: "12px 24px",
+                    fontSize: "18px",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px"
+                  }}
                   onClick={() => handleRsvp("DECLINED")}
                   disabled={isLoading}
                 >
-                  <X className="h-5 w-5 mr-2" />
-                  Não Poderei Comparecer
-                </Button>
+                  ❌ Não Poderei Comparecer
+                </button>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 } 
