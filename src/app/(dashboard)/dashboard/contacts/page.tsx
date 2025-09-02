@@ -14,12 +14,6 @@ import { prisma } from "@/lib/prisma";
 import { formatPhoneNumber } from "@/lib/utils";
 import { Guest, SendStatus, RsvpStatus } from "@/types/prisma";
 
-type StatsRecord = {
-  sendStatus: SendStatus;
-  rsvpStatus: RsvpStatus;
-  _count: number;
-};
-
 export default async function ContactsPage() {
   const contacts = await prisma.guest.findMany({
     orderBy: {
@@ -34,9 +28,9 @@ export default async function ContactsPage() {
   });
 
   const totalContacts = stats.reduce((acc: number, curr: { _count: number }) => acc + curr._count, 0);
-  const sentInvites = stats.reduce((acc: number, curr: { sendStatus: SendStatus; _count: number }) => 
+  const sentInvites = stats.reduce((acc: number, curr: { sendStatus: SendStatus; _count: number }) =>
     curr.sendStatus === "SENT" ? acc + curr._count : acc, 0);
-  const confirmedGuests = stats.reduce((acc: number, curr: { rsvpStatus: RsvpStatus; _count: number }) => 
+  const confirmedGuests = stats.reduce((acc: number, curr: { rsvpStatus: RsvpStatus; _count: number }) =>
     curr.rsvpStatus === "CONFIRMED" ? acc + curr._count : acc, 0);
 
   return (
@@ -88,10 +82,7 @@ export default async function ContactsPage() {
             <TableBody>
               {contacts.length === 0 ? (
                 <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    className="text-center text-sm text-muted-foreground"
-                  >
+                  <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">
                     Nenhum contato importado ainda.
                   </TableCell>
                 </TableRow>
