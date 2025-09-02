@@ -14,7 +14,6 @@ import {
 import { Send } from "lucide-react";
 import { formatPhoneNumber } from "@/lib/utils";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { GuestWithEvent, SendStatus } from "@/types/prisma";
 import { toast } from "sonner";
 

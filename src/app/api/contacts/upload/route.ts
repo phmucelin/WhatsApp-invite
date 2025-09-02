@@ -4,6 +4,11 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { parse } from "csv-parse/sync";
 
+interface CSVRecord {
+  NOME: string;
+  NUMERO: string;
+}
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -23,7 +28,7 @@ export async function POST(request: Request) {
     const records = parse(fileContent, {
       columns: true,
       skip_empty_lines: true,
-    });
+    }) as CSVRecord[];
 
     if (!Array.isArray(records) || records.length === 0) {
       return new NextResponse("Invalid CSV format", { status: 400 });
@@ -43,7 +48,7 @@ export async function POST(request: Request) {
     }
 
     // Processar os contatos em lote
-    const contacts = records.map((record: any) => ({
+    const contacts = records.map((record: CSVRecord) => ({
       name: record.NOME.trim(),
       phoneNumber: record.NUMERO.trim().replace(/\D/g, ""), // Remove caracteres não numéricos
     }));

@@ -52,7 +52,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
@@ -65,12 +65,16 @@ export async function GET(request: Request) {
         userId: session.user.id,
       },
       orderBy: {
-        createdAt: "desc",
+        date: "asc",
       },
       include: {
+        _count: {
+          select: {
+            guests: true,
+          },
+        },
         guests: {
           select: {
-            id: true,
             sendStatus: true,
             rsvpStatus: true,
           },
