@@ -5,7 +5,7 @@ import { prisma } from "./prisma";
 import { compare } from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as any, // Forçando o tipo para resolver o erro de compatibilidade
   session: {
     strategy: "jwt",
   },
@@ -51,9 +51,9 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ token, session }) {
       if (token) {
-        session.user.id = token.id;
-        session.user.name = token.name;
-        session.user.email = token.email;
+        session.user.id = token.id as string;
+        session.user.name = token.name as string;
+        session.user.email = token.email as string;
       }
 
       return session;
