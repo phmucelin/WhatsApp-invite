@@ -1,15 +1,15 @@
 import { put } from "@vercel/blob";
-import { nanoid } from "nanoid";
 
 export async function uploadImage(file: File) {
   try {
-    const blob = await put(`events/${nanoid()}.${file.name.split(".").pop()}`, file, {
-      access: "public",
+    const filename = `${Date.now()}-${file.name}`;
+    const { url } = await put(`images/${filename}`, file, {
+      access: 'public',
+      addRandomSuffix: false,
     });
-
-    return blob.url;
+    return url;
   } catch (error) {
-    console.error("Error uploading image:", error);
+    console.error("[BLOB_UPLOAD_ERROR]", error);
     throw new Error("Failed to upload image");
   }
 } 
