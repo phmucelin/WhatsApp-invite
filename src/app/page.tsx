@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,6 +88,12 @@ export default function RegisterPage() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Criando..." : "Criar Conta"}
             </Button>
+            <div className="text-center text-sm text-muted-foreground">
+              Já tem uma conta?{" "}
+              <Link href="/login" className="text-primary hover:underline">
+                Fazer login
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>
