@@ -161,27 +161,24 @@ export function EventForm() {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field: { onChange, value: _value, ...field } }) => (
-            <FormItem>
-              <FormLabel>Imagem do Convite</FormLabel>
-              <FormControl>
-              <Input
-  type="file"
-  accept="image/*"
-  name={field.name}
-  ref={field.ref}
-  onBlur={field.onBlur}
-  onChange={(e) => field.onChange(e.target.files?.[0])}
+       <FormField
+  control={form.control}
+  name="image"
+  render={({ field: { onChange } }) => (
+    <FormItem>
+      <FormLabel>Imagem do Convite</FormLabel>
+      <FormControl>
+        <Input
+          type="file"
+          accept="image/*"
+          onChange={(e) => onChange(e.target.files?.[0])}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
 />
 
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Criando..." : "Criar Evento"}
         </Button>
