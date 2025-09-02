@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { ContactUpload } from "@/components/forms/contact-upload";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
