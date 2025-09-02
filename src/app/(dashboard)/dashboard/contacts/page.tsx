@@ -29,12 +29,12 @@ export default async function ContactsPage() {
   const stats = await prisma.guest.groupBy({
     by: ["sendStatus", "rsvpStatus"],
     _count: true,
-  }) as StatsRecord[];
+  });
 
-  const totalContacts = stats.reduce((acc: number, curr: StatsRecord) => acc + curr._count, 0);
-  const sentInvites = stats.reduce((acc: number, curr: StatsRecord) => 
+  const totalContacts = stats.reduce((acc: number, curr: { _count: number }) => acc + curr._count, 0);
+  const sentInvites = stats.reduce((acc: number, curr: { sendStatus: SendStatus; _count: number }) => 
     curr.sendStatus === "SENT" ? acc + curr._count : acc, 0);
-  const confirmedGuests = stats.reduce((acc: number, curr: StatsRecord) => 
+  const confirmedGuests = stats.reduce((acc: number, curr: { rsvpStatus: RsvpStatus; _count: number }) => 
     curr.rsvpStatus === "CONFIRMED" ? acc + curr._count : acc, 0);
 
   return (
