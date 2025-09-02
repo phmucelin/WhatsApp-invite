@@ -14,15 +14,6 @@ export async function POST(request: Request) {
     const json = await request.json();
     const body = registerSchema.parse(json);
 
-    // Verifica se já existe algum usuário
-    const userCount = await prisma.user.count();
-    if (userCount > 0) {
-      return new NextResponse(
-        "Registro não permitido. Já existe um usuário cadastrado.",
-        { status: 403 }
-      );
-    }
-
     // Verifica se o email já está em uso
     const existingUser = await prisma.user.findUnique({
       where: { email: body.email },
