@@ -1,14 +1,53 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    console.log("[LIST_API] Listando todos os convidados");
+    console.log("[LIST_API] Listando convidados com filtros");
+    
+    const { searchParams } = new URL(request.url);
+    const name = searchParams.get('name')?.toLowerCase();
+    const phone = searchParams.get('phone');
+    const eventId = searchParams.get('eventId');
+    const eventTitle = searchParams.get('eventTitle')?.toLowerCase();
+    
+    console.log("[LIST_API] Filtros aplicados:", { name, phone, eventId, eventTitle });
+    
+    // Construir filtros dinamicamente
+    const where: any = {};
+    
+    if (name) {
+      where.name = {
+        contains: name,
+        mode: 'insensitive'
+      };
+    }
+    
+    if (phone) {
+      where.phoneNumber = {
+        contains: phone
+      };
+    }
+    
+    if (eventId) {
+      where.eventId = eventId;
+    }
+    
+    if (eventTitle) {
+      where.event = {
+        title: {
+          contains: eventTitle,
+          mode: 'insensitive'
+        }
+      };
+    }
     
     const guests = await prisma.guest.findMany({
+      where,
       include: {
         event: {
           select: {
+            id: true,
             title: true,
             date: true
           }
@@ -25,6 +64,8 @@ export async function GET() {
     const safeGuests = guests.map((guest: any) => ({
       id: guest.id,
       name: guest.name,
+      phoneNumber: guest.phoneNumber,
+      eventId: guest.event.id,
       eventTitle: guest.event.title,
       eventDate: guest.event.date,
       rsvpStatus: guest.rsvpStatus,
@@ -33,6 +74,7 @@ export async function GET() {
 
     return NextResponse.json({
       total: guests.length,
+      filters: { name, phone, eventId, eventTitle },
       guests: safeGuests,
       timestamp: new Date().toISOString()
     });
