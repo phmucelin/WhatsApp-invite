@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -33,6 +35,11 @@ export async function POST(request: Request) {
       return new NextResponse("Guest not found", { status: 404 });
     }
 
+    // Verificar se o evento pertence ao usuário
+    if (guest.event.userId !== session.user.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     // Preparar a mensagem
     const message = guest.event.message
       .replace("{{NOME}}", guest.name)
@@ -44,7 +51,14 @@ export async function POST(request: Request) {
 
     // Gerar o link do WhatsApp Web
     const phoneNumber = normalizePhoneNumber(guest.phoneNumber);
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+    console.log("[WHATSAPP_URL]", {
+      phoneNumber,
+      message,
+      whatsappUrl,
+    });
 
     // Atualizar o status do envio
     await prisma.guest.update({
