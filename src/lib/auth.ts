@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { compare } from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any, // Forçando o tipo para resolver o erro de compatibilidade
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
   },
