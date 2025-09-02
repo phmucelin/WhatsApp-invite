@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -19,9 +21,26 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
     const file = formData.get("file") as File;
+    const eventId = formData.get("eventId") as string;
 
     if (!file) {
       return new NextResponse("No file uploaded", { status: 400 });
+    }
+
+    if (!eventId) {
+      return new NextResponse("No event selected", { status: 400 });
+    }
+
+    // Verificar se o evento existe e pertence ao usuário
+    const event = await prisma.event.findFirst({
+      where: {
+        id: eventId,
+        userId: session.user.id,
+      },
+    });
+
+    if (!event) {
+      return new NextResponse("Event not found", { status: 404 });
     }
 
     const fileContent = await file.text();
@@ -51,6 +70,7 @@ export async function POST(request: Request) {
     const contacts = records.map((record: CSVRecord) => ({
       name: record.NOME.trim(),
       phoneNumber: record.NUMERO.trim().replace(/\D/g, ""), // Remove caracteres não numéricos
+      eventId: eventId,
     }));
 
     // Inserir contatos no banco de dados
@@ -60,7 +80,7 @@ export async function POST(request: Request) {
           where: {
             phoneNumber_eventId: {
               phoneNumber: contact.phoneNumber,
-              eventId: "placeholder", // Será atualizado quando o evento for criado
+              eventId: contact.eventId,
             },
           },
           update: {
@@ -69,7 +89,7 @@ export async function POST(request: Request) {
           create: {
             name: contact.name,
             phoneNumber: contact.phoneNumber,
-            eventId: "placeholder", // Será atualizado quando o evento for criado
+            eventId: contact.eventId,
           },
         })
       )
