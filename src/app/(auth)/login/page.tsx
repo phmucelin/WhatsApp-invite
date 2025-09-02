@@ -1,3 +1,5 @@
+"use client";
+
 import { LoginForm } from "@/components/forms/login-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
