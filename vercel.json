@@ -1,5 +1,4 @@
 {
   "buildCommand": "prisma generate && next build",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./prisma/",
   "installCommand": "npm install"
 } 
