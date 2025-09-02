@@ -28,8 +28,17 @@ export default function RsvpPage() {
     async function loadGuest() {
       try {
         console.log("[RSVP] Carregando convidado:", params.id);
-        const response = await fetch(`/api/rsvp/${params.id}`);
-        console.log("[RSVP] Resposta da API:", response.status);
+        
+        // Tentando a rota dinâmica primeiro
+        let response = await fetch(`/api/rsvp/${params.id}`);
+        console.log("[RSVP] Resposta da rota dinâmica:", response.status);
+        
+        // Se falhar, tentar a rota alternativa
+        if (!response.ok) {
+          console.log("[RSVP] Tentando rota alternativa...");
+          response = await fetch(`/api/rsvp/guest?id=${params.id}`);
+          console.log("[RSVP] Resposta da rota alternativa:", response.status);
+        }
         
         if (!response.ok) {
           throw new Error("Convidado não encontrado");
@@ -55,13 +64,27 @@ export default function RsvpPage() {
   async function handleRsvp(status: "CONFIRMED" | "DECLINED") {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/rsvp/${params.id}`, {
+      
+      // Tentando a rota dinâmica primeiro
+      let response = await fetch(`/api/rsvp/${params.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ status }),
       });
+      
+      // Se falhar, tentar a rota alternativa
+      if (!response.ok) {
+        console.log("[RSVP] Tentando rota alternativa para POST...");
+        response = await fetch(`/api/rsvp/guest?id=${params.id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
+        });
+      }
 
       if (!response.ok) {
         throw new Error("Erro ao confirmar presença");
