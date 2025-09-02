@@ -16,6 +16,7 @@ import { formatPhoneNumber } from "@/lib/utils";
 import { format } from "date-fns";
 import { GuestWithEvent, SendStatus } from "@/types/prisma";
 import { toast } from "sonner";
+import { Filters } from "@/components/dashboard/filters";
 
 type StatsRecord = {
   sendStatus: SendStatus;
@@ -43,7 +44,9 @@ async function getStats() {
 export function MessagesList() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [messages, setMessages] = useState<GuestWithEvent[]>([]);
+  const [filteredMessages, setFilteredMessages] = useState<GuestWithEvent[]>([]);
   const [stats, setStats] = useState<StatsRecord[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   useEffect(() => {
     loadData();
@@ -51,13 +54,58 @@ export function MessagesList() {
 
   async function loadData() {
     try {
+      setIsLoadingData(true);
       const [messages, stats] = await Promise.all([getMessages(), getStats()]);
       setMessages(messages);
+      setFilteredMessages(messages);
       setStats(stats);
     } catch (error) {
       console.error("[LOAD_DATA]", error);
       toast.error("Erro ao carregar dados");
+    } finally {
+      setIsLoadingData(false);
     }
+  }
+
+  function handleFiltersChange(filters: any) {
+    let filtered = [...messages];
+
+    // Filtro por nome
+    if (filters.name) {
+      filtered = filtered.filter(message => 
+        message.name.toLowerCase().includes(filters.name.toLowerCase())
+      );
+    }
+
+    // Filtro por telefone
+    if (filters.phone) {
+      filtered = filtered.filter(message => 
+        message.phoneNumber.includes(filters.phone)
+      );
+    }
+
+    // Filtro por evento
+    if (filters.eventId) {
+      filtered = filtered.filter(message => 
+        message.eventId === filters.eventId
+      );
+    }
+
+    // Filtro por status RSVP
+    if (filters.status) {
+      filtered = filtered.filter(message => 
+        message.rsvpStatus === filters.status
+      );
+    }
+
+    // Filtro por status de envio
+    if (filters.sendStatus) {
+      filtered = filtered.filter(message => 
+        message.sendStatus === filters.sendStatus
+      );
+    }
+
+    setFilteredMessages(filtered);
   }
 
   const totalMessages = stats.reduce((acc: number, curr: StatsRecord) => acc + curr._count, 0);
@@ -105,12 +153,14 @@ export function MessagesList() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Envios</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Mensagens</h2>
       </div>
+
+      {/* Estatísticas */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle>Total de Envios</CardTitle>
+            <CardTitle>Total de Mensagens</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{totalMessages}</p>
@@ -118,77 +168,104 @@ export function MessagesList() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Enviados</CardTitle>
+            <CardTitle>Mensagens Enviadas</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{sentMessages}</p>
+            <p className="text-3xl font-bold text-green-600">{sentMessages}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Pendentes</CardTitle>
+            <CardTitle>Mensagens Pendentes</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{pendingMessages}</p>
+            <p className="text-3xl font-bold text-yellow-600">{pendingMessages}</p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Filtros */}
+      <Filters onFiltersChange={handleFiltersChange} />
+
+      {/* Lista de Mensagens */}
       <Card>
         <CardHeader>
-          <CardTitle>Lista de Convidados</CardTitle>
+          <CardTitle>
+            Lista de Mensagens ({filteredMessages.length} de {messages.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Data</TableHead>
-                <TableHead>Evento</TableHead>
-                <TableHead>Contato</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {messages.length === 0 ? (
+          {isLoadingData ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-2 text-gray-600">Carregando mensagens...</p>
+            </div>
+          ) : filteredMessages.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              {messages.length === 0 ? "Nenhuma mensagem encontrada." : "Nenhuma mensagem encontrada com os filtros aplicados."}
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="text-center text-sm text-muted-foreground"
-                  >
-                    Nenhum convidado encontrado.
-                  </TableCell>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Número</TableHead>
+                  <TableHead>Evento</TableHead>
+                  <TableHead>Status do Envio</TableHead>
+                  <TableHead>Status da Confirmação</TableHead>
+                  <TableHead>Ações</TableHead>
                 </TableRow>
-              ) : (
-                messages.map((message) => (
+              </TableHeader>
+              <TableBody>
+                {filteredMessages.map((message) => (
                   <TableRow key={message.id}>
+                    <TableCell className="font-medium">{message.name}</TableCell>
+                    <TableCell>{formatPhoneNumber(message.phoneNumber)}</TableCell>
                     <TableCell>
-                      {format(new Date(message.updatedAt), "dd/MM/yyyy HH:mm")}
+                      <div>
+                        <p className="font-medium">{message.event.title}</p>
+                        <p className="text-sm text-gray-500">
+                          {format(new Date(message.event.date), "dd/MM/yyyy 'às' HH:mm")}
+                        </p>
+                      </div>
                     </TableCell>
-                    <TableCell>{message.event.title}</TableCell>
                     <TableCell>
-                      {message.name} ({formatPhoneNumber(message.phoneNumber)})
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        message.sendStatus === "SENT" 
+                          ? "text-green-600 bg-green-100" 
+                          : "text-yellow-600 bg-yellow-100"
+                      }`}>
+                        {message.sendStatus === "SENT" ? "Enviado" : "Pendente"}
+                      </span>
                     </TableCell>
                     <TableCell>
-                      {message.sendStatus === "SENT" ? "Enviado" : "Pendente"}
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        message.rsvpStatus === "CONFIRMED" 
+                          ? "text-green-600 bg-green-100"
+                          : message.rsvpStatus === "DECLINED"
+                          ? "text-red-600 bg-red-100"
+                          : "text-yellow-600 bg-yellow-100"
+                      }`}>
+                        {message.rsvpStatus === "CONFIRMED" ? "Confirmado" : 
+                         message.rsvpStatus === "DECLINED" ? "Declinado" : "Aguardando"}
+                      </span>
                     </TableCell>
                     <TableCell>
-                      {message.sendStatus === "PENDING" && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleSendMessage(message.id)}
-                          disabled={isLoading === message.id}
-                        >
-                          <Send className="h-4 w-4 mr-2" />
-                          {isLoading === message.id ? "Preparando..." : "Enviar"}
-                        </Button>
-                      )}
+                      <Button
+                        size="sm"
+                        onClick={() => handleSendMessage(message.id)}
+                        disabled={isLoading === message.id || message.sendStatus === "SENT"}
+                        className="flex items-center gap-2"
+                      >
+                        <Send className="h-4 w-4" />
+                        {isLoading === message.id ? "Enviando..." : "Enviar"}
+                      </Button>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 interface Guest {
   id: string;
@@ -20,53 +20,118 @@ interface Guest {
 
 export default function RsvpPage() {
   const params = useParams();
+  const router = useRouter();
   const [guest, setGuest] = useState<Guest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasResponded, setHasResponded] = useState(false);
+  const [searchAttempts, setSearchAttempts] = useState(0);
 
   useEffect(() => {
-    async function loadGuest() {
-      try {
-        console.log("[RSVP] Carregando convidado:", params.id);
-        
-        // Tentando a rota dinâmica primeiro
-        let response = await fetch(`/api/rsvp/${params.id}`);
-        console.log("[RSVP] Resposta da rota dinâmica:", response.status);
-        
-        // Se falhar, tentar a rota alternativa
-        if (!response.ok) {
-          console.log("[RSVP] Tentando rota alternativa...");
-          response = await fetch(`/api/rsvp/guest?id=${params.id}`);
-          console.log("[RSVP] Resposta da rota alternativa:", response.status);
-        }
-        
-        if (!response.ok) {
-          throw new Error("Convidado não encontrado");
-        }
-        
-        const data = await response.json();
-        console.log("[RSVP] Dados recebidos:", data);
-        setGuest(data);
-        setHasResponded(data.rsvpStatus !== "WAITING");
-      } catch (error) {
-        console.error("[RSVP_LOAD]", error);
-        alert("Erro ao carregar convite: " + error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
     if (params.id) {
-      loadGuest();
+      loadGuestWithFallback();
     }
   }, [params.id]);
+
+  async function loadGuestWithFallback() {
+    try {
+      setIsLoading(true);
+      const guestId = Array.isArray(params.id) ? params.id[0] : params.id;
+      console.log("[RSVP] Tentando carregar convidado com ID:", guestId);
+      
+      // Tentativa 1: ID direto
+      let response = await fetch(`/api/rsvp/${guestId}`);
+      console.log("[RSVP] Tentativa 1 - ID direto:", response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("[RSVP] Convidado encontrado com ID direto:", data.name);
+        setGuest(data);
+        setHasResponded(data.rsvpStatus !== "WAITING");
+        return;
+      }
+
+      // Tentativa 2: Rota alternativa
+      response = await fetch(`/api/rsvp/guest?id=${guestId}`);
+      console.log("[RSVP] Tentativa 2 - Rota alternativa:", response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("[RSVP] Convidado encontrado com rota alternativa:", data.name);
+        setGuest(data);
+        setHasResponded(data.rsvpStatus !== "WAITING");
+        return;
+      }
+
+      // Tentativa 3: Busca por nome (se o ID parecer um nome)
+      if (guestId && guestId.length > 10 && !guestId.includes('cmf')) {
+        console.log("[RSVP] Tentativa 3 - Buscando por nome:", guestId);
+        const searchResponse = await fetch(`/api/rsvp/search?query=${encodeURIComponent(guestId)}`);
+        
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
+          if (searchData.guests && searchData.guests.length > 0) {
+            const foundGuest = searchData.guests[0];
+            console.log("[RSVP] Convidado encontrado por busca:", foundGuest.name);
+            
+            // Redirecionar para o ID correto
+            router.replace(`/rsvp/${foundGuest.id}`);
+            return;
+          }
+        }
+      }
+
+      // Tentativa 4: Busca inteligente por todos os convidados
+      if (searchAttempts === 0) {
+        console.log("[RSVP] Tentativa 4 - Busca inteligente por todos os convidados");
+        setSearchAttempts(1);
+        
+        const allGuestsResponse = await fetch('/api/rsvp/list');
+        if (allGuestsResponse.ok) {
+          const allGuestsData = await allGuestsResponse.json();
+          console.log("[RSVP] Total de convidados no sistema:", allGuestsData.total);
+          
+          // Se há apenas um convidado, redirecionar para ele
+          if (allGuestsData.total === 1) {
+            const singleGuest = allGuestsData.guests[0];
+            console.log("[RSVP] Único convidado encontrado, redirecionando para:", singleGuest.id);
+            router.replace(`/rsvp/${singleGuest.id}`);
+            return;
+          }
+          
+          // Se há múltiplos convidados, mostrar lista para escolha
+          if (allGuestsData.total > 1) {
+            showGuestSelection(allGuestsData.guests);
+            return;
+          }
+        }
+      }
+
+      // Se chegou aqui, convidado não foi encontrado
+      console.log("[RSVP] Convidado não encontrado após todas as tentativas");
+      setGuest(null);
+      
+    } catch (error) {
+      console.error("[RSVP_LOAD]", error);
+      alert("Erro ao carregar convite: " + error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  function showGuestSelection(guests: any[]) {
+    const guestNames = guests.map(g => g.name).join(', ');
+    const message = `Encontramos ${guests.length} convidados no sistema: ${guestNames}. Por favor, use o link correto do convite.`;
+    alert(message);
+  }
 
   async function handleRsvp(status: "CONFIRMED" | "DECLINED") {
     try {
       setIsLoading(true);
       
-      // Tentando a rota dinâmica primeiro
-      let response = await fetch(`/api/rsvp/${params.id}`, {
+      if (!guest) return;
+      
+      // Tentar a rota dinâmica primeiro
+      let response = await fetch(`/api/rsvp/${guest.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +142,7 @@ export default function RsvpPage() {
       // Se falhar, tentar a rota alternativa
       if (!response.ok) {
         console.log("[RSVP] Tentando rota alternativa para POST...");
-        response = await fetch(`/api/rsvp/guest?id=${params.id}`, {
+        response = await fetch(`/api/rsvp/guest?id=${guest.id}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
