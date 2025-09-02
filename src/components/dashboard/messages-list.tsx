@@ -24,13 +24,19 @@ type StatsRecord = {
 
 async function getMessages() {
   const response = await fetch("/api/messages");
-  if (!response.ok) throw new Error("Failed to fetch messages");
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error);
+  }
   return response.json();
 }
 
 async function getStats() {
   const response = await fetch("/api/messages/stats");
-  if (!response.ok) throw new Error("Failed to fetch stats");
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error);
+  }
   return response.json();
 }
 
@@ -40,16 +46,19 @@ export function MessagesList() {
   const [stats, setStats] = useState<StatsRecord[]>([]);
 
   useEffect(() => {
-    Promise.all([getMessages(), getStats()])
-      .then(([messages, stats]) => {
-        setMessages(messages);
-        setStats(stats);
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error("Erro ao carregar dados");
-      });
+    loadData();
   }, []);
+
+  async function loadData() {
+    try {
+      const [messages, stats] = await Promise.all([getMessages(), getStats()]);
+      setMessages(messages);
+      setStats(stats);
+    } catch (error) {
+      console.error("[LOAD_DATA]", error);
+      toast.error("Erro ao carregar dados");
+    }
+  }
 
   const totalMessages = stats.reduce((acc: number, curr: StatsRecord) => acc + curr._count, 0);
   const sentMessages = stats.find((s: StatsRecord) => s.sendStatus === "SENT")?._count ?? 0;
@@ -58,6 +67,8 @@ export function MessagesList() {
   async function handleSendMessage(guestId: string) {
     try {
       setIsLoading(guestId);
+      console.log("[SEND_MESSAGE] Iniciando envio para:", guestId);
+
       const response = await fetch("/api/messages/send", {
         method: "POST",
         headers: {
@@ -67,26 +78,25 @@ export function MessagesList() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send message");
+        const error = await response.text();
+        throw new Error(error);
       }
 
       const data = await response.json();
-      
+      console.log("[SEND_MESSAGE] URL gerada:", data.whatsappUrl);
+
       // Abrir o WhatsApp Web em uma nova aba
-      window.open(data.whatsappUrl, "_blank");
+      const newWindow = window.open(data.whatsappUrl, "_blank");
+      if (!newWindow) {
+        throw new Error("O navegador bloqueou a abertura da nova aba. Por favor, permita popups para este site.");
+      }
 
       // Atualizar os dados
-      const [newMessages, newStats] = await Promise.all([
-        getMessages(),
-        getStats(),
-      ]);
-
-      setMessages(newMessages);
-      setStats(newStats);
+      await loadData();
       toast.success("Mensagem preparada para envio!");
     } catch (error) {
-      console.error(error);
-      toast.error("Erro ao preparar mensagem");
+      console.error("[SEND_MESSAGE]", error);
+      toast.error(error instanceof Error ? error.message : "Erro ao preparar mensagem");
     } finally {
       setIsLoading(null);
     }
@@ -152,7 +162,7 @@ export function MessagesList() {
                 messages.map((message) => (
                   <TableRow key={message.id}>
                     <TableCell>
-                      {format(message.updatedAt, "dd/MM/yyyy HH:mm")}
+                      {format(new Date(message.updatedAt), "dd/MM/yyyy HH:mm")}
                     </TableCell>
                     <TableCell>{message.event.title}</TableCell>
                     <TableCell>
