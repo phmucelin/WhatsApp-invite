@@ -29,12 +29,15 @@ export function ContactUpload() {
     async function loadEvents() {
       try {
         const response = await fetch("/api/events");
-        if (!response.ok) throw new Error("Failed to load events");
+        if (!response.ok) {
+          const error = await response.text();
+          throw new Error(error);
+        }
         const data = await response.json();
         setEvents(data);
       } catch (error) {
-        console.error("Error loading events:", error);
-        toast.error("Erro ao carregar eventos");
+        console.error("[EVENTS_LOAD]", error);
+        toast.error("Erro ao carregar eventos. Crie um evento primeiro.");
       }
     }
 
@@ -44,7 +47,10 @@ export function ContactUpload() {
   async function onFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     try {
       const file = event.target.files?.[0];
-      if (!file) return;
+      if (!file) {
+        toast.error("Nenhum arquivo selecionado");
+        return;
+      }
 
       if (!selectedEvent) {
         toast.error("Por favor, selecione um evento");
@@ -76,13 +82,21 @@ export function ContactUpload() {
       toast.success(`${data.count} contatos importados com sucesso!`);
       router.refresh();
     } catch (error) {
+      console.error("[CONTACTS_UPLOAD]", error);
       toast.error(error instanceof Error ? error.message : "Erro ao importar contatos");
-      console.error(error);
     } finally {
       setIsLoading(false);
       // Limpa o input para permitir selecionar o mesmo arquivo novamente
       event.target.value = "";
     }
+  }
+
+  if (events.length === 0) {
+    return (
+      <div className="text-sm text-muted-foreground">
+        Crie um evento antes de importar contatos
+      </div>
+    );
   }
 
   return (
