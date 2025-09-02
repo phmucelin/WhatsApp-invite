@@ -71,7 +71,7 @@ export async function GET(request: Request) {
       name: string;
       phoneNumber: string;
       eventId: string;
-      event: { id: string; title: string; date: string };
+      event: { id: string; title: string; date: Date };
       rsvpStatus: string;
       createdAt: string;
     }) => ({

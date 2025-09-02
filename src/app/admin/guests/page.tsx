@@ -60,6 +60,22 @@ export default function AdminGuestsPage() {
     loadGuests();
   }, [loadGuests]);
 
+  // Carregar eventos para o filtro
+  useEffect(() => {
+    async function loadEventsForFilter() {
+      try {
+        const response = await fetch("/api/events/list");
+        if (response.ok) {
+          const data = await response.json();
+          setEvents(data.events);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar eventos:", error);
+      }
+    }
+    loadEventsForFilter();
+  }, []);
+
   function getStatusColor(status: string) {
     switch (status) {
       case "CONFIRMED": return "text-green-600 bg-green-100";

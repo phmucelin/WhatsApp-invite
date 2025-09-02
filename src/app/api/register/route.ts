@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const { password: passwordField, ...result } = user;
+    const { ...result } = user;
 
     return NextResponse.json(result);
   } catch (error) {
