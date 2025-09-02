@@ -25,7 +25,7 @@ const formSchema = z.object({
   time: z.string().min(1, "O horário é obrigatório"),
   location: z.string().min(5, "O local deve ter no mínimo 5 caracteres"),
   message: z.string().min(10, "A mensagem deve ter no mínimo 10 caracteres"),
-  image: z.instanceof(File).optional(),
+  image: z.any().optional(),
 });
 
 type EventFormValues = z.infer<typeof formSchema>;
@@ -54,25 +54,27 @@ export function EventForm() {
       Object.entries(values).forEach(([key, value]) => {
         if (value instanceof File) {
           formData.append(key, value);
-        } else {
+        } else if (value !== undefined && value !== null) {
           formData.append(key, value.toString());
         }
       });
 
-      const response = await fetch("/api/events", {
+      const response = await fetch("/api/events/create", {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("Erro ao criar evento");
+        const error = await response.text();
+        throw new Error(error);
       }
 
       toast.success("Evento criado com sucesso!");
       router.push("/dashboard");
       router.refresh();
     } catch (error) {
-      toast.error("Erro ao criar evento");
+      console.error("[EVENT_CREATE]", error);
+      toast.error(error instanceof Error ? error.message : "Erro ao criar evento");
     } finally {
       setIsLoading(false);
     }
@@ -161,23 +163,23 @@ export function EventForm() {
             </FormItem>
           )}
         />
-       <FormField
-  control={form.control}
-  name="image"
-  render={({ field: { onChange } }) => (
-    <FormItem>
-      <FormLabel>Imagem do Convite</FormLabel>
-      <FormControl>
-        <Input
-          type="file"
-          accept="image/*"
-          onChange={(e) => onChange(e.target.files?.[0])}
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field: { onChange } }) => (
+            <FormItem>
+              <FormLabel>Imagem do Convite</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => onChange(e.target.files?.[0])}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Criando..." : "Criar Evento"}

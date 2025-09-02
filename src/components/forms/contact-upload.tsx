@@ -57,7 +57,8 @@ export function ContactUpload() {
         return;
       }
 
-      if (file.type !== "text/csv") {
+      // Aceitar tanto text/csv quanto application/vnd.ms-excel (alguns sistemas usam este MIME type para CSV)
+      if (file.type !== "text/csv" && file.type !== "application/vnd.ms-excel") {
         toast.error("Por favor, selecione um arquivo CSV");
         return;
       }
@@ -117,13 +118,18 @@ export function ContactUpload() {
           ))}
         </SelectContent>
       </Select>
-      <Input
-        type="file"
-        accept=".csv"
-        onChange={onFileChange}
-        disabled={isLoading}
-        className="max-w-xs"
-      />
+      <div className="flex-1">
+        <Input
+          type="file"
+          accept=".csv"
+          onChange={onFileChange}
+          disabled={isLoading}
+          className="max-w-xs"
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          O arquivo CSV deve ter as colunas: NOME, NUMERO
+        </p>
+      </div>
       <Button disabled={isLoading} variant="ghost">
         <Upload className="h-4 w-4" />
         <span className="sr-only">Upload CSV</span>
