@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ContactUpload } from "@/components/forms/contact-upload";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -12,21 +12,29 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatPhoneNumber } from "@/lib/utils";
-import { Guest, SendStatus, RsvpStatus } from "@/types/prisma";
+import { Guest } from "@/types/prisma";
 import { ClearContacts } from "@/components/dashboard/clear-contacts";
 import { Filters } from "@/components/dashboard/filters";
+
+interface FiltersType {
+  name: string;
+  phone: string;
+  eventId: string;
+  status: string;
+  sendStatus: string;
+}
 
 export default function ContactsPage() {
   const [contacts, setContacts] = useState<Guest[]>([]);
   const [filteredContacts, setFilteredContacts] = useState<Guest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [stats, setStats] = useState<any>({});
+  const [stats, setStats] = useState<{
+    total: number;
+    sent: number;
+    confirmed: number;
+  }>({ total: 0, sent: 0, confirmed: 0 });
 
-  useEffect(() => {
-    loadContacts();
-  }, []);
-
-  async function loadContacts() {
+  const loadContacts = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch("/api/rsvp/list");
@@ -41,7 +49,11 @@ export default function ContactsPage() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    loadContacts();
+  }, [loadContacts]);
 
   function calculateStats(contactsList: Guest[]) {
     const totalContacts = contactsList.length;
@@ -55,7 +67,7 @@ export default function ContactsPage() {
     });
   }
 
-  function handleFiltersChange(filters: any) {
+  function handleFiltersChange(filters: FiltersType) {
     let filtered = [...contacts];
 
     // Filtro por nome

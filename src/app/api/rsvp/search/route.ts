@@ -48,7 +48,13 @@ export async function GET(request: Request) {
     console.log("[SEARCH_API] Convidados encontrados:", guests.length);
     
     // Retornar apenas informações seguras
-    const safeGuests = guests.map((guest: any) => ({
+    const safeGuests = guests.map((guest: {
+      id: string;
+      name: string;
+      phoneNumber: string;
+      event: { title: string; date: string };
+      rsvpStatus: string;
+    }) => ({
       id: guest.id,
       name: guest.name,
       phoneNumber: guest.phoneNumber,

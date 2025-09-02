@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface Guest {
   id: string;
@@ -33,24 +33,7 @@ export default function AdminGuestsPage() {
   const [eventFilter, setEventFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  useEffect(() => {
-    loadEvents();
-    loadGuests();
-  }, []);
-
-  async function loadEvents() {
-    try {
-      const response = await fetch("/api/events/list");
-      if (response.ok) {
-        const data = await response.json();
-        setEvents(data.events);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar eventos:", error);
-    }
-  }
-
-  async function loadGuests() {
+  const loadGuests = useCallback(async () => {
     try {
       setIsLoading(true);
       
@@ -70,6 +53,22 @@ export default function AdminGuestsPage() {
       console.error("Erro ao carregar convidados:", error);
     } finally {
       setIsLoading(false);
+    }
+  }, [nameFilter, phoneFilter, eventFilter]);
+
+  useEffect(() => {
+    loadGuests();
+  }, [loadGuests]);
+
+  async function loadEvents() {
+    try {
+      const response = await fetch("/api/events/list");
+      if (response.ok) {
+        const data = await response.json();
+        setEvents(data.events);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar eventos:", error);
     }
   }
 

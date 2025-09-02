@@ -24,7 +24,13 @@ export async function GET() {
 
     console.log("[EVENTS_API] Eventos encontrados:", events.length);
     
-    const eventsWithGuestCount = events.map((event: any) => ({
+    const eventsWithGuestCount = events.map((event: {
+      id: string;
+      title: string;
+      date: string;
+      location: string;
+      _count: { guests: number };
+    }) => ({
       id: event.id,
       title: event.title,
       date: event.date,

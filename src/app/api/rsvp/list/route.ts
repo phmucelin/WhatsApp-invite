@@ -14,7 +14,12 @@ export async function GET(request: Request) {
     console.log("[LIST_API] Filtros aplicados:", { name, phone, eventId, eventTitle });
     
     // Construir filtros dinamicamente
-    const where: any = {};
+    const where: {
+      name?: { contains: string; mode: 'insensitive' };
+      phoneNumber?: { contains: string };
+      eventId?: string;
+      event?: { title: { contains: string; mode: 'insensitive' } };
+    } = {};
     
     if (name) {
       where.name = {
@@ -61,7 +66,15 @@ export async function GET(request: Request) {
     console.log("[LIST_API] Convidados encontrados:", guests.length);
     
     // Retornar apenas informações seguras (sem dados sensíveis)
-    const safeGuests = guests.map((guest: any) => ({
+    const safeGuests = guests.map((guest: {
+      id: string;
+      name: string;
+      phoneNumber: string;
+      eventId: string;
+      event: { id: string; title: string; date: string };
+      rsvpStatus: string;
+      createdAt: string;
+    }) => ({
       id: guest.id,
       name: guest.name,
       phoneNumber: guest.phoneNumber,

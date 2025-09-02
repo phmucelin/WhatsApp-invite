@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 interface Guest {
@@ -26,13 +26,7 @@ export default function RsvpPage() {
   const [hasResponded, setHasResponded] = useState(false);
   const [searchAttempts, setSearchAttempts] = useState(0);
 
-  useEffect(() => {
-    if (params.id) {
-      loadGuestWithFallback();
-    }
-  }, [params.id]);
-
-  async function loadGuestWithFallback() {
+  const loadGuestWithFallback = useCallback(async () => {
     try {
       setIsLoading(true);
       const guestId = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -68,7 +62,7 @@ export default function RsvpPage() {
         const searchResponse = await fetch(`/api/rsvp/search?query=${encodeURIComponent(guestId)}`);
         
         if (searchResponse.ok) {
-          const searchData = await searchResponse.json();
+          const searchData = await response.json();
           if (searchData.guests && searchData.guests.length > 0) {
             const foundGuest = searchData.guests[0];
             console.log("[RSVP] Convidado encontrado por busca:", foundGuest.name);
@@ -116,9 +110,15 @@ export default function RsvpPage() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [params.id, router, searchAttempts]);
 
-  function showGuestSelection(guests: any[]) {
+  useEffect(() => {
+    if (params.id) {
+      loadGuestWithFallback();
+    }
+  }, [params.id, loadGuestWithFallback]);
+
+  function showGuestSelection(guests: Guest[]) {
     const guestNames = guests.map(g => g.name).join(', ');
     const message = `Encontramos ${guests.length} convidados no sistema: ${guestNames}. Por favor, use o link correto do convite.`;
     alert(message);

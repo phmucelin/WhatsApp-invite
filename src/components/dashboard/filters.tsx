@@ -14,7 +14,13 @@ interface Event {
 }
 
 interface FiltersProps {
-  onFiltersChange: (filters: any) => void;
+  onFiltersChange: (filters: {
+    name: string;
+    phone: string;
+    eventId: string;
+    status: string;
+    sendStatus: string;
+  }) => void;
   showEventFilter?: boolean;
   showStatusFilter?: boolean;
   showPhoneFilter?: boolean;

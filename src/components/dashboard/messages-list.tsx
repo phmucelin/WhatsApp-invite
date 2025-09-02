@@ -67,7 +67,13 @@ export function MessagesList() {
     }
   }
 
-  function handleFiltersChange(filters: any) {
+  function handleFiltersChange(filters: {
+    name: string;
+    phone: string;
+    eventId: string;
+    status: string;
+    sendStatus: string;
+  }) {
     let filtered = [...messages];
 
     // Filtro por nome

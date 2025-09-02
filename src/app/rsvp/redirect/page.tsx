@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 export default function RsvpRedirectPage() {
@@ -11,16 +11,7 @@ export default function RsvpRedirectPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Se há um query parameter, fazer busca automática
-    const query = searchParams.get('q');
-    if (query) {
-      setSearchQuery(query);
-      searchGuests(query);
-    }
-  }, [searchParams]);
-
-  async function searchGuests(query: string) {
+  const searchGuests = useCallback(async (query: string) => {
     try {
       setIsSearching(true);
       setError("");
@@ -55,7 +46,16 @@ export default function RsvpRedirectPage() {
     } finally {
       setIsSearching(false);
     }
-  }
+  }, [router]);
+
+  useEffect(() => {
+    // Se há um query parameter, fazer busca automática
+    const query = searchParams.get('q');
+    if (query) {
+      setSearchQuery(query);
+      searchGuests(query);
+    }
+  }, [searchParams, searchGuests]);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -161,7 +161,7 @@ export default function RsvpRedirectPage() {
                 Nenhum convidado encontrado
               </h3>
               <p className="text-gray-600">
-                Não encontramos convidados com "{searchQuery}". Verifique o nome ou telefone e tente novamente.
+                Não encontramos convidados com &quot;{searchQuery}&quot;. Verifique o nome ou telefone e tente novamente.
               </p>
             </div>
           )}
