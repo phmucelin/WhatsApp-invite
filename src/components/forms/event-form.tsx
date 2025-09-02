@@ -164,7 +164,7 @@ export function EventForm() {
         <FormField
           control={form.control}
           name="image"
-          render={({ field: { value, onChange, ...field } }) => (
+          render={({ field: { onChange, ...field } }) => (
             <FormItem>
               <FormLabel>Imagem do Convite</FormLabel>
               <FormControl>
