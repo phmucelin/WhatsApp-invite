@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { EventWithGuests, GuestStatus } from "@/types/prisma";
+import { ClearEvents } from "@/components/dashboard/clear-events";
 
 export default async function DashboardPage() {
   const events = await prisma.event.findMany({
@@ -32,19 +33,22 @@ export default async function DashboardPage() {
 
   const totalEvents = events.length;
   const totalInvites = events.reduce((acc: number, event: EventWithGuests) => acc + event._count.guests, 0);
-  const totalConfirmed = events.reduce((acc: number, event: EventWithGuests) => 
+  const totalConfirmed = events.reduce((acc: number, event: EventWithGuests) =>
     acc + event.guests.filter((guest: GuestStatus) => guest.rsvpStatus === "CONFIRMED").length, 0);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Eventos</h2>
-        <Button asChild>
-          <Link href="/dashboard/events/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Novo Evento
-          </Link>
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button asChild>
+            <Link href="/dashboard/events/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Novo Evento
+            </Link>
+          </Button>
+          <ClearEvents />
+        </div>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
@@ -95,7 +99,7 @@ export default async function DashboardPage() {
                       </p>
                       <p className="text-sm">
                         <strong>Data:</strong>{" "}
-                        {format(event.date, "PPP 'às' p", {
+                        {format(new Date(event.date), "PPP 'às' p", {
                           locale: ptBR,
                         })}
                       </p>

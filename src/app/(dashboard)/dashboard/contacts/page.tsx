@@ -13,6 +13,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { formatPhoneNumber } from "@/lib/utils";
 import { Guest, SendStatus, RsvpStatus } from "@/types/prisma";
+import { ClearContacts } from "@/components/dashboard/clear-contacts";
 
 export default async function ContactsPage() {
   const contacts = await prisma.guest.findMany({
@@ -37,7 +38,10 @@ export default async function ContactsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Contatos</h2>
-        <ContactUpload />
+        <div className="flex items-center gap-4">
+          <ContactUpload />
+          <ClearContacts />
+        </div>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
