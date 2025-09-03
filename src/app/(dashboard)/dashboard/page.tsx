@@ -1,35 +1,39 @@
-export const dynamic = "force-dynamic";
+"use client";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus } from "lucide-react";
-import { prisma } from "@/lib/prisma";
+import { Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { EventWithGuests, GuestStatus } from "@/types/prisma";
-import { ClearEvents } from "@/components/dashboard/clear-events";
+// import { ClearEvents } from "@/components/dashboard/clear-events";
+import { DeleteEvent } from "@/components/dashboard/delete-event";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-export default async function DashboardPage() {
-  const events = await prisma.event.findMany({
-    orderBy: {
-      date: "asc",
-    },
-    include: {
-      _count: {
-        select: {
-          guests: true,
-        },
-      },
-      guests: {
-        select: {
-          sendStatus: true,
-          rsvpStatus: true,
-        },
-      },
-    },
-    take: 10,
-  }) as EventWithGuests[];
+export default function DashboardPage() {
+  const [events, setEvents] = useState<EventWithGuests[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch("/api/events/list");
+      if (response.ok) {
+        const data = await response.json();
+        setEvents(data.events);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar eventos:", error);
+      toast.error("Erro ao carregar eventos");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   const totalEvents = events.length;
   const totalInvites = events.reduce((acc: number, event: EventWithGuests) => acc + event._count.guests, 0);
@@ -47,7 +51,7 @@ export default async function DashboardPage() {
               Novo Evento
             </Link>
           </Button>
-          <ClearEvents />
+          {/* <ClearEvents /> */}
         </div>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -89,8 +93,14 @@ export default async function DashboardPage() {
             <div className="space-y-4">
               {events.map((event) => (
                 <Card key={event.id}>
-                  <CardHeader>
+                  <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>{event.title}</CardTitle>
+                    <DeleteEvent
+                      eventId={event.id}
+                      eventTitle={event.title}
+                      guestCount={event._count.guests}
+                      onDelete={fetchEvents}
+                    />
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">

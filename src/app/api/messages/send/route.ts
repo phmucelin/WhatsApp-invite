@@ -61,8 +61,8 @@ export async function POST(request: Request) {
       );
 
     // Adicionar emojis e formatação se a mensagem não tiver
-    if (!message.includes("🎉") && !message.includes("📅")) {
-      message = `🎉 *Convite Especial* 🎉
+    if (!message.includes("🎈") && !message.includes("📅")) {
+      message = `🎈 *Convite Especial* 🎈
 
 ${message}
 
@@ -71,8 +71,41 @@ ${message}
 
 🔗 *Link do Convite:* ${`https://invite-whats-app.vercel.app/rsvp/${guest.id}`}
 
-✨ *Aguardo sua confirmação!* ✨`;
+⭐ *Aguardo sua confirmação!* ⭐`;
     }
+
+    // Versão com emojis Unicode muito básicos (máxima compatibilidade)
+    const simpleEmojiMessage = message
+      .replace(/🎈/g, "🎈")
+      .replace(/📅/g, "📅")
+      .replace(/📍/g, "📍")
+      .replace(/🔗/g, "🔗")
+      .replace(/⭐/g, "⭐");
+
+    // Para usar versão com emojis simples, descomente a linha abaixo:
+    // message = simpleEmojiMessage;
+
+    // Versão com emojis mais básicos (mais compatível)
+    const basicEmojiMessage = message
+      .replace(/🎈/g, "🎊")
+      .replace(/📅/g, "📆")
+      .replace(/📍/g, "🏠")
+      .replace(/🔗/g, "🔗")
+      .replace(/⭐/g, "💫");
+
+    // Para usar versão com emojis básicos, descomente a linha abaixo:
+    // message = basicEmojiMessage;
+
+    // Versão alternativa com símbolos ASCII caso os emojis não funcionem
+    const asciiMessage = message
+      .replace(/🎈/g, "***")
+      .replace(/📅/g, "[DATA]")
+      .replace(/📍/g, "[LOCAL]")
+      .replace(/🔗/g, "[LINK]")
+      .replace(/⭐/g, "***");
+
+    // Para usar versão ASCII (sem emojis), descomente a linha abaixo:
+    // message = asciiMessage;
 
     // Gerar o link do WhatsApp Web
     const phoneNumber = normalizePhoneNumber(guest.phoneNumber);
