@@ -99,12 +99,12 @@ export default function DashboardPage() {
                 <Card key={event.id}>
                   <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>{event.title}</CardTitle>
-                    {/* <DeleteEvent
+                    <DeleteEvent
                       eventId={event.id}
                       eventTitle={event.title}
                       guestCount={event._count.guests}
                       onDelete={fetchEvents}
-                    /> */}
+                    />
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
