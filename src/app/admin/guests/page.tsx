@@ -30,8 +30,8 @@ export default function AdminGuestsPage() {
   // Filtros
   const [nameFilter, setNameFilter] = useState("");
   const [phoneFilter, setPhoneFilter] = useState("");
-  const [eventFilter, setEventFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [eventFilter, setEventFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const loadGuests = useCallback(async () => {
     try {
@@ -41,7 +41,7 @@ export default function AdminGuestsPage() {
       const params = new URLSearchParams();
       if (nameFilter) params.append("name", nameFilter);
       if (phoneFilter) params.append("phone", phoneFilter);
-      if (eventFilter) params.append("eventId", eventFilter);
+      if (eventFilter && eventFilter !== "all") params.append("eventId", eventFilter);
       
       const response = await fetch(`/api/rsvp/list?${params.toString()}`);
       if (response.ok) {
@@ -148,7 +148,7 @@ export default function AdminGuestsPage() {
                 onChange={(e) => setEventFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Todos os eventos</option>
+                <option value="all">Todos os eventos</option>
                 {events.map((event) => (
                   <option key={event.id} value={event.id}>
                     {event.title} ({event.guestCount} convidados)
@@ -167,7 +167,7 @@ export default function AdminGuestsPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Todos os status</option>
+                <option value="all">Todos os status</option>
                 <option value="WAITING">Aguardando</option>
                 <option value="CONFIRMED">Confirmado</option>
                 <option value="DECLINED">Declinado</option>
@@ -187,8 +187,8 @@ export default function AdminGuestsPage() {
               onClick={() => {
                 setNameFilter("");
                 setPhoneFilter("");
-                setEventFilter("");
-                setStatusFilter("");
+                setEventFilter("all");
+                setStatusFilter("all");
                 loadGuests();
               }}
               className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
@@ -242,7 +242,7 @@ export default function AdminGuestsPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {guests
-                    .filter(guest => !statusFilter || guest.rsvpStatus === statusFilter)
+                    .filter(guest => statusFilter === "all" || guest.rsvpStatus === statusFilter)
                     .map((guest) => (
                     <tr key={guest.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">

@@ -30,9 +30,9 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
   const [events, setEvents] = useState<Event[]>([]);
   const [nameFilter, setNameFilter] = useState("");
   const [phoneFilter, setPhoneFilter] = useState("");
-  const [eventFilter, setEventFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [sendStatusFilter, setSendStatusFilter] = useState("");
+  const [eventFilter, setEventFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sendStatusFilter, setSendStatusFilter] = useState("all");
 
   useEffect(() => {
     if (showEventFilter) {
@@ -67,9 +67,9 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
   function clearFilters() {
     setNameFilter("");
     setPhoneFilter("");
-    setEventFilter("");
-    setStatusFilter("");
-    setSendStatusFilter("");
+    setEventFilter("all");
+    setStatusFilter("all");
+    setSendStatusFilter("all");
   }
 
   const hasActiveFilters = nameFilter || phoneFilter || eventFilter || statusFilter || sendStatusFilter;
@@ -119,7 +119,7 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
                   <SelectValue placeholder="Todos os eventos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os eventos</SelectItem>
+                  <SelectItem value="all">Todos os eventos</SelectItem>
                   {events.map((event) => (
                     <SelectItem key={event.id} value={event.id}>
                       {event.title} ({event.guestCount} convidados)
@@ -139,7 +139,7 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
                   <SelectValue placeholder="Todos os status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os status</SelectItem>
+                  <SelectItem value="all">Todos os status</SelectItem>
                   <SelectItem value="WAITING">Aguardando</SelectItem>
                   <SelectItem value="CONFIRMED">Confirmado</SelectItem>
                   <SelectItem value="DECLINED">Declinado</SelectItem>
@@ -156,7 +156,7 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
                 <SelectValue placeholder="Todos os envios" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os envios</SelectItem>
+                <SelectItem value="all">Todos os envios</SelectItem>
                 <SelectItem value="PENDING">Pendente</SelectItem>
                 <SelectItem value="SENT">Enviado</SelectItem>
               </SelectContent>

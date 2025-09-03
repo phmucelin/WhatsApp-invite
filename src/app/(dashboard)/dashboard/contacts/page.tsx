@@ -85,21 +85,21 @@ export default function ContactsPage() {
     }
 
     // Filtro por evento
-    if (filters.eventId) {
+    if (filters.eventId && filters.eventId !== "all") {
       filtered = filtered.filter(contact => 
         contact.eventId === filters.eventId
       );
     }
 
     // Filtro por status RSVP
-    if (filters.status) {
+    if (filters.status && filters.status !== "all") {
       filtered = filtered.filter(contact => 
         contact.rsvpStatus === filters.status
       );
     }
 
     // Filtro por status de envio
-    if (filters.sendStatus) {
+    if (filters.sendStatus && filters.sendStatus !== "all") {
       filtered = filtered.filter(contact => 
         contact.sendStatus === filters.sendStatus
       );

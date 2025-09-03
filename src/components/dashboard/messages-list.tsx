@@ -91,21 +91,21 @@ export function MessagesList() {
     }
 
     // Filtro por evento
-    if (filters.eventId) {
+    if (filters.eventId && filters.eventId !== "all") {
       filtered = filtered.filter(message => 
         message.eventId === filters.eventId
       );
     }
 
     // Filtro por status RSVP
-    if (filters.status) {
+    if (filters.status && filters.status !== "all") {
       filtered = filtered.filter(message => 
         message.rsvpStatus === filters.status
       );
     }
 
     // Filtro por status de envio
-    if (filters.sendStatus) {
+    if (filters.sendStatus && filters.sendStatus !== "all") {
       filtered = filtered.filter(message => 
         message.sendStatus === filters.sendStatus
       );
