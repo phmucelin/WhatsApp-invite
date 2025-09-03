@@ -26,9 +26,9 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Erro ao carregar eventos:", error);
       toast.error("Erro ao carregar eventos");
-          } finally {
-        setIsLoading(false);
-      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {

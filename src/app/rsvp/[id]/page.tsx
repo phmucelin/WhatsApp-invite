@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface Guest {
   id: string;
@@ -265,9 +266,11 @@ export default function RsvpPage() {
 
             {guest.event.imageUrl && (
               <div style={{ textAlign: "center", marginBottom: "32px" }}>
-                <img 
+                <Image 
                   src={guest.event.imageUrl} 
                   alt="Convite" 
+                  width={400}
+                  height={300}
                   style={{ 
                     maxWidth: "100%", 
                     height: "auto", 
