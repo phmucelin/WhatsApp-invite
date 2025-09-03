@@ -40,17 +40,7 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
     }
   }, [showEventFilter]);
 
-  useEffect(() => {
-    // Aplicar filtros automaticamente quando mudarem
-    const filters = {
-      name: nameFilter,
-      phone: phoneFilter,
-      eventId: eventFilter,
-      status: statusFilter,
-      sendStatus: sendStatusFilter,
-    };
-    onFiltersChange(filters);
-  }, [nameFilter, phoneFilter, eventFilter, statusFilter, sendStatusFilter, onFiltersChange]);
+
 
   async function loadEvents() {
     try {
@@ -164,9 +154,26 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
           </div>
         </div>
 
-        {/* Botão Limpar Filtros */}
-        {hasActiveFilters && (
-          <div className="mt-4 flex justify-end">
+        {/* Botões de Ação */}
+        <div className="mt-4 flex justify-end gap-3">
+          <Button
+            onClick={() => {
+              const filters = {
+                name: nameFilter,
+                phone: phoneFilter,
+                eventId: eventFilter,
+                status: statusFilter,
+                sendStatus: sendStatusFilter,
+              };
+              onFiltersChange(filters);
+            }}
+            className="flex items-center gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            Aplicar Filtros
+          </Button>
+          
+          {hasActiveFilters && (
             <Button
               variant="outline"
               onClick={clearFilters}
@@ -175,8 +182,8 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
               <X className="h-4 w-4" />
               Limpar Filtros
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </CardContent>
     </Card>
   );

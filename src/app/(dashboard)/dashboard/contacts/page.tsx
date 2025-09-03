@@ -67,7 +67,7 @@ export default function ContactsPage() {
     });
   }
 
-  function handleFiltersChange(filters: FiltersType) {
+  const handleFiltersChange = useCallback((filters: FiltersType) => {
     let filtered = [...contacts];
 
     // Filtro por nome
@@ -107,7 +107,7 @@ export default function ContactsPage() {
 
     setFilteredContacts(filtered);
     calculateStats(filtered);
-  }
+  }, [contacts]);
 
   return (
     <div className="space-y-6">

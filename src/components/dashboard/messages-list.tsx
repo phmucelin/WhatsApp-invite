@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -67,13 +67,13 @@ export function MessagesList() {
     }
   }
 
-  function handleFiltersChange(filters: {
+  const handleFiltersChange = useCallback((filters: {
     name: string;
     phone: string;
     eventId: string;
     status: string;
     sendStatus: string;
-  }) {
+  }) => {
     let filtered = [...messages];
 
     // Filtro por nome
@@ -112,7 +112,7 @@ export function MessagesList() {
     }
 
     setFilteredMessages(filtered);
-  }
+  }, [messages]);
 
   const totalMessages = stats.reduce((acc: number, curr: StatsRecord) => acc + curr._count, 0);
   const sentMessages = stats.find((s: StatsRecord) => s.sendStatus === "SENT")?._count ?? 0;
