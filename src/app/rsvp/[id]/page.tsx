@@ -417,7 +417,7 @@ export default function RsvpPage() {
                       const eventDate = new Date(guest.event.date);
                       const weekdays = [
                         "domingo", "segunda-feira", "terça-feira", "quarta-feira", 
-                        "quinta-feira", "sexta-feira", "sábado"
+                        "terça-feira", "sexta-feira", "sábado"
                       ];
                       
                       const months = [
@@ -425,12 +425,13 @@ export default function RsvpPage() {
                         "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
                       ];
                       
-                      const weekday = weekdays[eventDate.getDay()];
-                      const day = eventDate.getDate();
-                      const month = months[eventDate.getMonth()];
-                      const year = eventDate.getFullYear();
-                      const hours = eventDate.getHours().toString().padStart(2, '0');
-                      const minutes = eventDate.getMinutes().toString().padStart(2, '0');
+                      // Usar métodos UTC para evitar problemas de fuso horário
+                      const weekday = weekdays[eventDate.getUTCDay()];
+                      const day = eventDate.getUTCDate();
+                      const month = months[eventDate.getUTCMonth()];
+                      const year = eventDate.getUTCFullYear();
+                      const hours = eventDate.getUTCHours().toString().padStart(2, '0');
+                      const minutes = eventDate.getUTCMinutes().toString().padStart(2, '0');
                       
                       return `${weekday}, ${day} de ${month} de ${year} às ${hours}:${minutes}`;
                     })()}

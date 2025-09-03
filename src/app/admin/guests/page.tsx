@@ -272,9 +272,15 @@ export default function AdminGuestsPage() {
                             {guest.eventTitle}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {new Date(guest.eventDate).toLocaleDateString(
-                              "pt-BR"
-                            )}
+                            {(() => {
+                              const eventDate = new Date(guest.eventDate);
+                              const day = eventDate.getUTCDate().toString().padStart(2, '0');
+                              const month = (eventDate.getUTCMonth() + 1).toString().padStart(2, '0');
+                              const year = eventDate.getUTCFullYear();
+                              const hours = eventDate.getUTCHours().toString().padStart(2, '0');
+                              const minutes = eventDate.getUTCMinutes().toString().padStart(2, '0');
+                              return `${day}/${month}/${year} às ${hours}:${minutes}`;
+                            })()}
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
@@ -285,9 +291,13 @@ export default function AdminGuestsPage() {
                           </span>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                          {new Date(guest.createdAt).toLocaleDateString(
-                            "pt-BR"
-                          )}
+                          {(() => {
+                            const createdAt = new Date(guest.createdAt);
+                            const day = createdAt.getUTCDate().toString().padStart(2, '0');
+                            const month = (createdAt.getUTCMonth() + 1).toString().padStart(2, '0');
+                            const year = createdAt.getUTCFullYear();
+                            return `${day}/${month}/${year}`;
+                          })()}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                           <a

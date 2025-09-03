@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/table";
 import { Send } from "lucide-react";
 import { formatPhoneNumber } from "@/lib/utils";
-import { format } from "date-fns";
 import { GuestWithEvent, SendStatus } from "@/types/prisma";
 import { toast } from "sonner";
 import { Filters } from "@/components/dashboard/filters";
@@ -253,10 +252,15 @@ export function MessagesList() {
                       <div>
                         <p className="font-medium">{message.event.title}</p>
                         <p className="text-sm text-gray-500">
-                          {format(
-                            new Date(message.event.date),
-                            "dd/MM/yyyy 'às' HH:mm"
-                          )}
+                          {(() => {
+                            const eventDate = new Date(message.event.date);
+                            const day = eventDate.getUTCDate().toString().padStart(2, '0');
+                            const month = (eventDate.getUTCMonth() + 1).toString().padStart(2, '0');
+                            const year = eventDate.getUTCFullYear();
+                            const hours = eventDate.getUTCHours().toString().padStart(2, '0');
+                            const minutes = eventDate.getUTCMinutes().toString().padStart(2, '0');
+                            return `${day}/${month}/${year} às ${hours}:${minutes}`;
+                          })()}
                         </p>
                       </div>
                     </TableCell>
