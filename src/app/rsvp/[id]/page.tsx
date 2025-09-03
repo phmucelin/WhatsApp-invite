@@ -413,14 +413,27 @@ export default function RsvpPage() {
                     Data e Horário
                   </p>
                   <p style={{ color: "#4b5563" }}>
-                    {new Date(guest.event.date).toLocaleDateString("pt-BR", {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {(() => {
+                      const eventDate = new Date(guest.event.date);
+                      const weekdays = [
+                        "domingo", "segunda-feira", "terça-feira", "quarta-feira", 
+                        "quinta-feira", "sexta-feira", "sábado"
+                      ];
+                      
+                      const months = [
+                        "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+                        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+                      ];
+                      
+                      const weekday = weekdays[eventDate.getDay()];
+                      const day = eventDate.getDate();
+                      const month = months[eventDate.getMonth()];
+                      const year = eventDate.getFullYear();
+                      const hours = eventDate.getHours().toString().padStart(2, '0');
+                      const minutes = eventDate.getMinutes().toString().padStart(2, '0');
+                      
+                      return `${weekday}, ${day} de ${month} de ${year} às ${hours}:${minutes}`;
+                    })()}
                   </p>
                 </div>
               </div>

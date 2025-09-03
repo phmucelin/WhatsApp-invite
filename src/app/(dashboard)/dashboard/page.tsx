@@ -4,8 +4,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { EventWithGuests, GuestStatus } from "@/types/prisma";
 import { ClearEvents } from "@/components/dashboard/clear-events";
 import { ClearContacts } from "@/components/dashboard/clear-contacts";
@@ -124,9 +122,27 @@ export default function DashboardPage() {
                       </p>
                       <p className="text-sm">
                         <strong>Data:</strong>{" "}
-                        {format(new Date(event.date), "PPP 'às' p", {
-                          locale: ptBR,
-                        })}
+                        {(() => {
+                          const eventDate = new Date(event.date);
+                          const weekdays = [
+                            "domingo", "segunda-feira", "terça-feira", "quarta-feira", 
+                            "quinta-feira", "sexta-feira", "sábado"
+                          ];
+                          
+                          const months = [
+                            "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+                            "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+                          ];
+                          
+                          const weekday = weekdays[eventDate.getDay()];
+                          const day = eventDate.getDate();
+                          const month = months[eventDate.getMonth()];
+                          const year = eventDate.getFullYear();
+                          const hours = eventDate.getHours().toString().padStart(2, '0');
+                          const minutes = eventDate.getMinutes().toString().padStart(2, '0');
+                          
+                          return `${weekday}, ${day} de ${month} de ${year} às ${hours}:${minutes}`;
+                        })()}
                       </p>
                       <p className="text-sm">
                         <strong>Local:</strong> {event.location}
