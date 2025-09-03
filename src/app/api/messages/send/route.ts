@@ -78,56 +78,26 @@ export async function POST(request: Request) {
         `https://invite-whats-app.vercel.app/rsvp/${guest.id}`
       );
 
-    // Adicionar emojis e formatação se a mensagem não tiver
-    if (!message.includes("🎊") && !message.includes("📅")) {
-      // Versão com emojis Unicode seguros para WhatsApp
-      message = `🎊 *Convite Especial* 🎊
+    // Adicionar formatação calorosa se a mensagem não tiver
+    if (!message.includes("Convite Especial") && !message.includes("Data:")) {
+      message = `*Convite Especial* 
 
 ${message}
 
-📅 *Data:* ${eventDate}
-📍 *Local:* ${guest.event.location}
+*Data:* ${eventDate}
+*Local:* ${guest.event.location}
 
-🔗 *Link do Convite:* ${`https://invite-whats-app.vercel.app/rsvp/${guest.id}`}
+*Link do Convite:* ${`https://invite-whats-app.vercel.app/rsvp/${guest.id}`}
 
-⭐ *Aguardo sua confirmação!* ⭐`;
+*Estou ansioso(a) para sua confirmação! Será um prazer ter você conosco!*`;
     }
 
-    // Testar diferentes versões de emojis para compatibilidade
-    let finalMessage = message;
-    
-    // Versão 1: Emojis Unicode seguros para WhatsApp (mais compatível)
-    const basicEmojis = message
-      .replace(/🎊/g, "🎊")
-      .replace(/📅/g, "📅")
-      .replace(/📍/g, "📍")
-      .replace(/🔗/g, "🔗")
-      .replace(/⭐/g, "⭐");
-    
-    // Versão 2: Emojis alternativos (fallback)
-    const alternativeEmojis = message
-      .replace(/🎊/g, "🎉")
-      .replace(/📅/g, "📆")
-      .replace(/📍/g, "🏠")
-      .replace(/🔗/g, "🔗")
-      .replace(/⭐/g, "💫");
-    
-    // Versão 3: Símbolos ASCII (garantia de funcionamento)
-    const asciiVersion = message
-      .replace(/🎊/g, "***")
-      .replace(/📅/g, "[DATA]")
-      .replace(/📍/g, "[LOCAL]")
-      .replace(/🔗/g, "[LINK]")
-      .replace(/⭐/g, "***");
-
-    // Usar a versão básica por padrão, mas logar todas para debug
-    finalMessage = basicEmojis;
+    // Usar a mensagem original sem emojis
+    const finalMessage = message;
     
     console.log("[MESSAGE_VERSIONS]", {
       original: message,
-      basic: basicEmojis,
-      alternative: alternativeEmojis,
-      ascii: asciiVersion
+      final: finalMessage
     });
 
     // Gerar o link do WhatsApp Web com encoding robusto
@@ -147,8 +117,7 @@ ${message}
       return new NextResponse("Invalid phone number format", { status: 400 });
     }
     
-    // SOLUÇÃO SIMPLIFICADA: Encoding direto sem Buffer
-    // 1. Aplicar encodeURIComponent para URL encoding correto
+    // Encoding simples e direto
     let encodedMessage;
     try {
       encodedMessage = encodeURIComponent(finalMessage);
@@ -157,59 +126,18 @@ ${message}
       console.error("[MESSAGES_SEND] Erro ao codificar mensagem:", error);
       return new NextResponse("Error encoding message", { status: 500 });
     }
-    
-    // 2. Versão alternativa com substituição de espaços por +
-    let encodedMessagePlus;
-    try {
-      encodedMessagePlus = encodedMessage.replace(/%20/g, '+');
-      console.log("[MESSAGES_SEND] Mensagem com + criada com sucesso");
-    } catch (error) {
-      console.error("[MESSAGES_SEND] Erro ao criar versão com +:", error);
-      encodedMessagePlus = encodedMessage; // fallback
-    }
-    
-    // 3. Versão com encoding manual para debug
-    let manualEncoded;
-    try {
-      manualEncoded = finalMessage
-        .split('')
-        .map(char => {
-          const code = char.charCodeAt(0);
-          if (code < 128) return char; // ASCII básico
-          return encodeURIComponent(char);
-        })
-        .join('');
-      console.log("[MESSAGES_SEND] Encoding manual criado com sucesso");
-    } catch (error) {
-      console.error("[MESSAGES_SEND] Erro no encoding manual:", error);
-      manualEncoded = encodedMessage; // fallback
-    }
 
-    console.log("[MESSAGES_SEND] Criando URLs do WhatsApp...");
+    console.log("[MESSAGES_SEND] Criando URL do WhatsApp...");
     
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-    const whatsappUrlPlus = `https://wa.me/${phoneNumber}?text=${encodedMessagePlus}`;
-    const whatsappUrlManual = `https://wa.me/${phoneNumber}?text=${manualEncoded}`;
     
-    console.log("[MESSAGES_SEND] URLs criadas com sucesso");
+    console.log("[MESSAGES_SEND] URL criada com sucesso");
 
     console.log("[WHATSAPP_ENCODING]", {
       phoneNumber,
       originalMessage: finalMessage,
       encodedMessage,
-      encodedMessagePlus,
-      manualEncoded,
-      whatsappUrl,
-      whatsappUrlPlus,
-      whatsappUrlManual,
-      // Debug: mostrar como cada emoji é codificado
-      emojiCodes: {
-        '🎊': encodeURIComponent('🎊'),
-        '📅': encodeURIComponent('📅'),
-        '📍': encodeURIComponent('📍'),
-        '🔗': encodeURIComponent('🔗'),
-        '⭐': encodeURIComponent('⭐')
-      }
+      whatsappUrl
     });
 
     // Atualizar o status do envio
@@ -227,18 +155,13 @@ ${message}
 
     return NextResponse.json({ 
       whatsappUrl,
-      whatsappUrlPlus,
-      whatsappUrlManual,
-      messageVersions: {
-        basic: basicEmojis,
-        alternative: alternativeEmojis,
-        ascii: asciiVersion
+      messageInfo: {
+        originalMessage: finalMessage,
+        finalMessage: finalMessage
       },
       encodingInfo: {
         originalMessage: finalMessage,
-        encodedMessage,
-        encodedMessagePlus,
-        manualEncoded
+        encodedMessage
       }
     });
   } catch (error) {
