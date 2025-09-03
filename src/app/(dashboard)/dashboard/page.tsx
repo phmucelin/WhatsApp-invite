@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { EventWithGuests, GuestStatus } from "@/types/prisma";
@@ -14,7 +14,7 @@ import { toast } from "sonner";
 
 export default function DashboardPage() {
   const [events, setEvents] = useState<EventWithGuests[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchEvents = async () => {
     try {
@@ -26,9 +26,9 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Erro ao carregar eventos:", error);
       toast.error("Erro ao carregar eventos");
-    } finally {
-      setLoading(false);
-    }
+          } finally {
+        setIsLoading(false);
+      }
   };
 
   useEffect(() => {
@@ -85,7 +85,11 @@ export default function DashboardPage() {
           <CardTitle>Eventos Recentes</CardTitle>
         </CardHeader>
         <CardContent>
-          {events.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center text-sm text-muted-foreground py-6">
+              Carregando eventos...
+            </div>
+          ) : events.length === 0 ? (
             <div className="text-center text-sm text-muted-foreground py-6">
               Nenhum evento criado ainda.
             </div>

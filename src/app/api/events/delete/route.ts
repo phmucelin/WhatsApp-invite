@@ -40,21 +40,19 @@ export async function DELETE(request: Request) {
 
     console.log(`[DELETE_EVENT] Deletando evento ${event.title} com ${event._count.guests} convidados`);
 
-    // Deletar o evento e todos os convidados em uma transação
-    await prisma.$transaction(async (tx: any) => {
-      // Primeiro deletar todos os convidados
-      await tx.guest.deleteMany({
-        where: {
-          eventId: eventId,
-        },
-      });
+    // Deletar o evento e todos os convidados
+    // Primeiro deletar todos os convidados
+    await prisma.guest.deleteMany({
+      where: {
+        eventId: eventId,
+      },
+    });
 
-      // Depois deletar o evento
-      await tx.event.delete({
-        where: {
-          id: eventId,
-        },
-      });
+    // Depois deletar o evento
+    await prisma.event.delete({
+      where: {
+        id: eventId,
+      },
     });
 
     console.log(`[DELETE_EVENT] Evento ${event.title} deletado com sucesso`);

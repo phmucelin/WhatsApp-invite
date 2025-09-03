@@ -73,7 +73,7 @@ export function DeleteEvent({ eventId, eventTitle, guestCount, onDelete }: Delet
         <AlertDialogHeader>
           <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja deletar o evento <strong>"{eventTitle}"</strong>?
+            Tem certeza que deseja deletar o evento <strong>&quot;{eventTitle}&quot;</strong>?
             <br />
             <br />
             <span className="text-destructive font-semibold">

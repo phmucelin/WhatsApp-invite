@@ -74,38 +74,39 @@ ${message}
 ⭐ *Aguardo sua confirmação!* ⭐`;
     }
 
-    // Versão com emojis Unicode muito básicos (máxima compatibilidade)
+    // Versões alternativas de emojis (comentadas para uso futuro)
+    // Para usar versão com emojis simples, descomente as linhas abaixo:
+    /*
     const simpleEmojiMessage = message
       .replace(/🎈/g, "🎈")
       .replace(/📅/g, "📅")
       .replace(/📍/g, "📍")
       .replace(/🔗/g, "🔗")
       .replace(/⭐/g, "⭐");
+    message = simpleEmojiMessage;
+    */
 
-    // Para usar versão com emojis simples, descomente a linha abaixo:
-    // message = simpleEmojiMessage;
-
-    // Versão com emojis mais básicos (mais compatível)
+    // Para usar versão com emojis básicos, descomente as linhas abaixo:
+    /*
     const basicEmojiMessage = message
       .replace(/🎈/g, "🎊")
       .replace(/📅/g, "📆")
       .replace(/📍/g, "🏠")
       .replace(/🔗/g, "🔗")
       .replace(/⭐/g, "💫");
+    message = basicEmojiMessage;
+    */
 
-    // Para usar versão com emojis básicos, descomente a linha abaixo:
-    // message = basicEmojiMessage;
-
-    // Versão alternativa com símbolos ASCII caso os emojis não funcionem
+    // Para usar versão ASCII (sem emojis), descomente as linhas abaixo:
+    /*
     const asciiMessage = message
       .replace(/🎈/g, "***")
       .replace(/📅/g, "[DATA]")
       .replace(/📍/g, "[LOCAL]")
       .replace(/🔗/g, "[LINK]")
       .replace(/⭐/g, "***");
-
-    // Para usar versão ASCII (sem emojis), descomente a linha abaixo:
-    // message = asciiMessage;
+    message = asciiMessage;
+    */
 
     // Gerar o link do WhatsApp Web
     const phoneNumber = normalizePhoneNumber(guest.phoneNumber);
