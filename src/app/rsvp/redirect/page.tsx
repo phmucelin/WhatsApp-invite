@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Phone, PartyPopper, Search } from "lucide-react";
 
 export default function RsvpRedirectPage() {
   const searchParams = useSearchParams();
@@ -153,10 +154,12 @@ export default function RsvpRedirectPage() {
                         {guest.name}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        📱 {guest.phoneNumber}
+                        <Phone className="inline-block w-4 h-4 mr-1" />
+                        {guest.phoneNumber}
                       </p>
                       <p className="text-sm text-gray-600">
-                        🎉 {guest.eventTitle}
+                        <PartyPopper className="inline-block w-4 h-4 mr-1 text-yellow-500" />
+                        {guest.eventTitle}
                       </p>
                       <p className="text-xs text-gray-500">
                         Status:{" "}
@@ -184,7 +187,9 @@ export default function RsvpRedirectPage() {
             searchQuery &&
             !error && (
               <div className="py-8 text-center">
-                <div className="mb-4 text-6xl text-gray-400">🔍</div>
+                <div className="mb-4 text-6xl text-gray-400">
+                  <Search className="w-16 h-16 mx-auto" />
+                </div>
                 <h3 className="mb-2 text-lg font-semibold text-gray-900">
                   Nenhum convidado encontrado
                 </h3>
@@ -197,7 +202,10 @@ export default function RsvpRedirectPage() {
 
           {/* Dicas */}
           <div className="mt-8 rounded-lg bg-blue-50 p-4">
-            <h3 className="mb-2 font-semibold text-blue-900">💡 Dicas:</h3>
+            <h3 className="mb-2 font-semibold text-blue-900">
+              <span className="inline-block w-4 h-4 mr-1">💡</span>
+              Dicas:
+            </h3>
             <ul className="space-y-1 text-sm text-blue-800">
               <li>• Digite apenas o primeiro nome do convidado</li>
               <li>• Use o número de telefone completo</li>

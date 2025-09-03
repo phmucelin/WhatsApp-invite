@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import { PartyPopper, Calendar, MapPin, User } from "lucide-react";
 
 interface Guest {
   id: string;
@@ -316,12 +317,22 @@ export default function RsvpPage() {
           >
             <h1
               style={{
-                fontSize: "32px",
+                color: "#ffffff",
+                fontSize: "28px",
                 fontWeight: "bold",
                 marginBottom: "8px",
               }}
             >
-              🎉 Convite Especial
+              <PartyPopper 
+                style={{ 
+                  display: "inline-block", 
+                  marginRight: "8px",
+                  color: "#fbbf24",
+                  width: "28px",
+                  height: "28px"
+                }} 
+              />
+              Convite Especial
             </h1>
             <p style={{ color: "#bfdbfe", fontSize: "18px" }}>
               Você está convidado(a) para
@@ -352,7 +363,13 @@ export default function RsvpPage() {
             </div>
 
             {guest.event.imageUrl && (
-              <div style={{ textAlign: "center", marginBottom: "32px" }}>
+              <div style={{ 
+                textAlign: "center", 
+                marginBottom: "32px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
                 <Image
                   src={guest.event.imageUrl}
                   alt="Convite"
@@ -360,9 +377,12 @@ export default function RsvpPage() {
                   height={300}
                   style={{
                     maxWidth: "100%",
+                    width: "auto",
                     height: "auto",
+                    maxHeight: "400px",
                     borderRadius: "8px",
                     boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1)",
+                    objectFit: "contain"
                   }}
                 />
               </div>
@@ -380,7 +400,14 @@ export default function RsvpPage() {
                   marginBottom: "16px",
                 }}
               >
-                <span style={{ fontSize: "24px" }}>📅</span>
+                <Calendar 
+                  style={{ 
+                    fontSize: "24px",
+                    color: "#3b82f6",
+                    width: "24px",
+                    height: "24px"
+                  }} 
+                />
                 <div>
                   <p style={{ fontWeight: "600", color: "#1f2937" }}>
                     Data e Horário
@@ -409,7 +436,14 @@ export default function RsvpPage() {
                   marginBottom: "16px",
                 }}
               >
-                <span style={{ fontSize: "24px" }}>📍</span>
+                <MapPin 
+                  style={{ 
+                    fontSize: "24px",
+                    color: "#22c55e",
+                    width: "24px",
+                    height: "24px"
+                  }} 
+                />
                 <div>
                   <p style={{ fontWeight: "600", color: "#1f2937" }}>Local</p>
                   <p style={{ color: "#4b5563" }}>{guest.event.location}</p>
@@ -426,7 +460,14 @@ export default function RsvpPage() {
                   borderRadius: "8px",
                 }}
               >
-                <span style={{ fontSize: "24px" }}>👤</span>
+                <User 
+                  style={{ 
+                    fontSize: "24px",
+                    color: "#a855f7",
+                    width: "24px",
+                    height: "24px"
+                  }} 
+                />
                 <div>
                   <p style={{ fontWeight: "600", color: "#1f2937" }}>
                     Convidado

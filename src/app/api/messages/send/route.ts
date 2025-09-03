@@ -61,8 +61,8 @@ export async function POST(request: Request) {
       );
 
     // Adicionar emojis e formatação se a mensagem não tiver
-    if (!message.includes("🎈") && !message.includes("📅")) {
-      message = `🎈 *Convite Especial* 🎈
+    if (!message.includes("🎊") && !message.includes("📅")) {
+      message = `🎊 *Convite Especial* 🎊
 
 ${message}
 
@@ -78,7 +78,7 @@ ${message}
     // Para usar versão com emojis simples, descomente as linhas abaixo:
     /*
     const simpleEmojiMessage = message
-      .replace(/🎈/g, "🎈")
+      .replace(/🎊/g, "🎊")
       .replace(/📅/g, "📅")
       .replace(/📍/g, "📍")
       .replace(/🔗/g, "🔗")
@@ -89,7 +89,7 @@ ${message}
     // Para usar versão com emojis básicos, descomente as linhas abaixo:
     /*
     const basicEmojiMessage = message
-      .replace(/🎈/g, "🎊")
+      .replace(/🎊/g, "🎊")
       .replace(/📅/g, "📆")
       .replace(/📍/g, "🏠")
       .replace(/🔗/g, "🔗")
@@ -100,7 +100,7 @@ ${message}
     // Para usar versão ASCII (sem emojis), descomente as linhas abaixo:
     /*
     const asciiMessage = message
-      .replace(/🎈/g, "***")
+      .replace(/🎊/g, "***")
       .replace(/📅/g, "[DATA]")
       .replace(/📍/g, "[LOCAL]")
       .replace(/🔗/g, "[LINK]")
