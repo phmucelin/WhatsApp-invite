@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     // Preparar a mensagem melhorada com formatação correta de data
     const eventDate = new Date(guest.event.date);
     
-    // Formatação manual para evitar problemas de fuso horário
+    // Formatação manual usando o horário exato como foi salvo
     const weekdays = [
       "domingo", "segunda-feira", "terça-feira", "quarta-feira", 
       "quinta-feira", "sexta-feira", "sábado"
@@ -72,17 +72,20 @@ export async function POST(request: Request) {
       "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
     ];
     
-    const weekday = weekdays[eventDate.getUTCDay()];
-    const day = eventDate.getUTCDate();
-    const month = months[eventDate.getUTCMonth()];
-    const year = eventDate.getUTCFullYear();
-    const hours = eventDate.getUTCHours().toString().padStart(2, '0');
-    const minutes = eventDate.getUTCMinutes().toString().padStart(2, '0');
+    // Usar os métodos locais em vez de UTC para manter o horário exato
+    const weekday = weekdays[eventDate.getDay()];
+    const day = eventDate.getDate();
+    const month = months[eventDate.getMonth()];
+    const year = eventDate.getFullYear();
+    const hours = eventDate.getHours().toString().padStart(2, '0');
+    const minutes = eventDate.getMinutes().toString().padStart(2, '0');
     
     const formattedDate = `${weekday}, ${day} de ${month} de ${year} às ${hours}:${minutes}`;
     
-    console.log("[MESSAGES_SEND] Data original:", guest.event.date);
+    console.log("[MESSAGES_SEND] Data original do banco:", guest.event.date);
+    console.log("[MESSAGES_SEND] Data parseada:", eventDate);
     console.log("[MESSAGES_SEND] Data formatada:", formattedDate);
+    console.log("[MESSAGES_SEND] Horário extraído:", `${hours}:${minutes}`);
 
     let message = guest.event.message
       .replace("{{NOME}}", guest.name)
