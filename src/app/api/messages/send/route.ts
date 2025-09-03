@@ -58,20 +58,36 @@ export async function POST(request: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Preparar a mensagem melhorada com emojis e informações
-    const eventDate = new Date(guest.event.date).toLocaleDateString("pt-BR", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    // Preparar a mensagem melhorada com formatação correta de data
+    const eventDate = new Date(guest.event.date);
+    
+    // Formatação manual para evitar problemas de fuso horário
+    const weekdays = [
+      "domingo", "segunda-feira", "terça-feira", "quarta-feira", 
+      "quinta-feira", "sexta-feira", "sábado"
+    ];
+    
+    const months = [
+      "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+      "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+    ];
+    
+    const weekday = weekdays[eventDate.getUTCDay()];
+    const day = eventDate.getUTCDate();
+    const month = months[eventDate.getUTCMonth()];
+    const year = eventDate.getUTCFullYear();
+    const hours = eventDate.getUTCHours().toString().padStart(2, '0');
+    const minutes = eventDate.getUTCMinutes().toString().padStart(2, '0');
+    
+    const formattedDate = `${weekday}, ${day} de ${month} de ${year} às ${hours}:${minutes}`;
+    
+    console.log("[MESSAGES_SEND] Data original:", guest.event.date);
+    console.log("[MESSAGES_SEND] Data formatada:", formattedDate);
 
     let message = guest.event.message
       .replace("{{NOME}}", guest.name)
       .replace("{{EVENTO}}", guest.event.title)
-      .replace("{{DATA}}", eventDate)
+      .replace("{{DATA}}", formattedDate)
       .replace("{{LOCAL}}", guest.event.location)
       .replace(
         "{{LINK}}",
@@ -84,7 +100,7 @@ export async function POST(request: Request) {
 
 ${message}
 
-*Data:* ${eventDate}
+*Data:* ${formattedDate}
 *Local:* ${guest.event.location}
 
 *Link do Convite:* ${`https://invite-whats-app.vercel.app/rsvp/${guest.id}`}
