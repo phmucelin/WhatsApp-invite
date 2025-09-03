@@ -28,15 +28,20 @@ export function ClearEvents({ onClear }: ClearEventsProps) {
         throw new Error(error);
       }
 
-      toast.success("Todos os eventos foram removidos com sucesso!");
+      const result = await response.json();
+      console.log("[CLEAR_EVENTS] Resultado:", result);
+      
+      toast.success(`Todos os eventos foram removidos com sucesso! ${result.deletedEvents} eventos e ${result.deletedGuests} convidados removidos.`);
       
       // Força atualização da página para garantir que os dados sejam limpos
       if (onClear) {
         onClear();
       }
       
-      // Recarrega a página para garantir que tudo seja atualizado
-      window.location.reload();
+      // Aguarda um pouco antes de recarregar para garantir que o toast seja exibido
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("[CLEAR_EVENTS]", error);
       toast.error("Erro ao remover eventos. Tente novamente.");

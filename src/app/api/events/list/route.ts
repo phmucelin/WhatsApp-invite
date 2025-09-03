@@ -1,11 +1,22 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
-    console.log("[EVENTS_API] Listando todos os eventos");
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    console.log(`[EVENTS_API] Listando eventos para usuário: ${session.user.id}`);
 
     const events = await prisma.event.findMany({
+      where: {
+        userId: session.user.id, // Filtra apenas eventos do usuário logado
+      },
       include: {
         _count: {
           select: {
@@ -24,7 +35,7 @@ export async function GET() {
       },
     });
 
-    console.log("[EVENTS_API] Eventos encontrados:", events.length);
+    console.log(`[EVENTS_API] Eventos encontrados para usuário ${session.user.id}:`, events.length);
 
     return NextResponse.json({
       total: events.length,
