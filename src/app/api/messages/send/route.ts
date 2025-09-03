@@ -131,28 +131,67 @@ ${message}
     });
 
     // Gerar o link do WhatsApp Web com encoding robusto
-    const phoneNumber = normalizePhoneNumber(guest.phoneNumber);
+    console.log("[MESSAGES_SEND] Phone number original:", guest.phoneNumber);
+    
+    let phoneNumber;
+    try {
+      phoneNumber = normalizePhoneNumber(guest.phoneNumber);
+      console.log("[MESSAGES_SEND] Phone number normalizado:", phoneNumber);
+    } catch (error) {
+      console.error("[MESSAGES_SEND] Erro ao normalizar telefone:", error);
+      return new NextResponse("Invalid phone number", { status: 400 });
+    }
+    
+    if (!phoneNumber || phoneNumber.length < 10) {
+      console.error("[MESSAGES_SEND] Telefone inválido após normalização:", phoneNumber);
+      return new NextResponse("Invalid phone number format", { status: 400 });
+    }
     
     // SOLUÇÃO SIMPLIFICADA: Encoding direto sem Buffer
     // 1. Aplicar encodeURIComponent para URL encoding correto
-    const encodedMessage = encodeURIComponent(finalMessage);
+    let encodedMessage;
+    try {
+      encodedMessage = encodeURIComponent(finalMessage);
+      console.log("[MESSAGES_SEND] Mensagem codificada com sucesso");
+    } catch (error) {
+      console.error("[MESSAGES_SEND] Erro ao codificar mensagem:", error);
+      return new NextResponse("Error encoding message", { status: 500 });
+    }
     
     // 2. Versão alternativa com substituição de espaços por +
-    const encodedMessagePlus = encodedMessage.replace(/%20/g, '+');
+    let encodedMessagePlus;
+    try {
+      encodedMessagePlus = encodedMessage.replace(/%20/g, '+');
+      console.log("[MESSAGES_SEND] Mensagem com + criada com sucesso");
+    } catch (error) {
+      console.error("[MESSAGES_SEND] Erro ao criar versão com +:", error);
+      encodedMessagePlus = encodedMessage; // fallback
+    }
     
     // 3. Versão com encoding manual para debug
-    const manualEncoded = finalMessage
-      .split('')
-      .map(char => {
-        const code = char.charCodeAt(0);
-        if (code < 128) return char; // ASCII básico
-        return encodeURIComponent(char);
-      })
-      .join('');
+    let manualEncoded;
+    try {
+      manualEncoded = finalMessage
+        .split('')
+        .map(char => {
+          const code = char.charCodeAt(0);
+          if (code < 128) return char; // ASCII básico
+          return encodeURIComponent(char);
+        })
+        .join('');
+      console.log("[MESSAGES_SEND] Encoding manual criado com sucesso");
+    } catch (error) {
+      console.error("[MESSAGES_SEND] Erro no encoding manual:", error);
+      manualEncoded = encodedMessage; // fallback
+    }
 
+    console.log("[MESSAGES_SEND] Criando URLs do WhatsApp...");
+    
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     const whatsappUrlPlus = `https://wa.me/${phoneNumber}?text=${encodedMessagePlus}`;
     const whatsappUrlManual = `https://wa.me/${phoneNumber}?text=${manualEncoded}`;
+    
+    console.log("[MESSAGES_SEND] URLs criadas com sucesso");
 
     console.log("[WHATSAPP_ENCODING]", {
       phoneNumber,
@@ -174,10 +213,17 @@ ${message}
     });
 
     // Atualizar o status do envio
-    await prisma.guest.update({
-      where: { id: guest.id },
-      data: { sendStatus: "SENT" },
-    });
+    console.log("[MESSAGES_SEND] Atualizando status do guest para SENT...");
+    try {
+      await prisma.guest.update({
+        where: { id: guest.id },
+        data: { sendStatus: "SENT" },
+      });
+      console.log("[MESSAGES_SEND] Status atualizado com sucesso");
+    } catch (error) {
+      console.error("[MESSAGES_SEND] Erro ao atualizar status:", error);
+      // Não falha a operação por causa disso, apenas loga o erro
+    }
 
     return NextResponse.json({ 
       whatsappUrl,
