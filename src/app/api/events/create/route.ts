@@ -38,16 +38,17 @@ export async function POST(request: Request) {
     console.log("[EVENTS_CREATE] Hora recebida:", time);
     console.log("[EVENTS_CREATE] String concatenada:", `${date}T${time}`);
     
-    // Criar data de forma mais robusta
+    // Criar data de forma mais robusta - SALVAR NO HORÁRIO LOCAL
     const [year, month, day] = date.split('-').map(Number);
     const [hours, minutes] = time.split(':').map(Number);
     
-    // Criar data usando UTC para evitar problemas de fuso horário
-    const eventDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+    // Criar data no horário local do usuário (não UTC)
+    const eventDate = new Date(year, month - 1, day, hours, minutes);
     
-    console.log("[EVENTS_CREATE] Data criada:", eventDate);
+    console.log("[EVENTS_CREATE] Data criada (local):", eventDate);
     console.log("[EVENTS_CREATE] Data ISO:", eventDate.toISOString());
     console.log("[EVENTS_CREATE] Horário local:", eventDate.toLocaleString('pt-BR'));
+    console.log("[EVENTS_CREATE] Horário extraído:", `${hours}:${minutes}`);
 
     const event = await prisma.event.create({
       data: {
