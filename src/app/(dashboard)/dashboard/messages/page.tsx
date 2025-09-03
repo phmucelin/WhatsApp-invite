@@ -60,9 +60,8 @@ Teste de emojis para WhatsApp
 🔗 *Link:* https://exemplo.com
 ⭐ *Confirmação!* ⭐`;
 
-      // Testar diferentes métodos de encoding
-      const utf8Message = Buffer.from(testMessage, 'utf8').toString('utf8');
-      const encodedMessage = encodeURIComponent(utf8Message);
+      // Testar diferentes métodos de encoding (sem Buffer)
+      const encodedMessage = encodeURIComponent(testMessage);
       const encodedMessagePlus = encodedMessage.replace(/%20/g, '+');
       
       // Encoding manual para debug
@@ -77,7 +76,6 @@ Teste de emojis para WhatsApp
 
       console.log("[TEST_EMOJIS_ENCODING]", {
         original: testMessage,
-        utf8: utf8Message,
         encoded: encodedMessage,
         encodedPlus: encodedMessagePlus,
         manual: manualEncoded,

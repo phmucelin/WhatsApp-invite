@@ -116,17 +116,14 @@ ${message}
     // Gerar o link do WhatsApp Web com encoding robusto
     const phoneNumber = normalizePhoneNumber(guest.phoneNumber);
     
-    // SOLUÇÃO ROBUSTA: Encoding UTF-8 + URL encoding
-    // 1. Garantir que a string está em UTF-8
-    const utf8Message = Buffer.from(finalMessage, 'utf8').toString('utf8');
+    // SOLUÇÃO SIMPLIFICADA: Encoding direto sem Buffer
+    // 1. Aplicar encodeURIComponent para URL encoding correto
+    const encodedMessage = encodeURIComponent(finalMessage);
     
-    // 2. Aplicar encodeURIComponent para URL encoding correto
-    const encodedMessage = encodeURIComponent(utf8Message);
-    
-    // 3. Versão alternativa com substituição de espaços por +
+    // 2. Versão alternativa com substituição de espaços por +
     const encodedMessagePlus = encodedMessage.replace(/%20/g, '+');
     
-    // 4. Versão com encoding manual para debug
+    // 3. Versão com encoding manual para debug
     const manualEncoded = finalMessage
       .split('')
       .map(char => {
@@ -143,7 +140,6 @@ ${message}
     console.log("[WHATSAPP_ENCODING]", {
       phoneNumber,
       originalMessage: finalMessage,
-      utf8Message,
       encodedMessage,
       encodedMessagePlus,
       manualEncoded,
@@ -176,7 +172,7 @@ ${message}
         ascii: asciiVersion
       },
       encodingInfo: {
-        utf8Message,
+        originalMessage: finalMessage,
         encodedMessage,
         encodedMessagePlus,
         manualEncoded
