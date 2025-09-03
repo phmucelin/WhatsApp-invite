@@ -34,7 +34,20 @@ export async function POST(request: Request) {
       imageUrl = await uploadImage(image);
     }
 
-    const eventDate = new Date(`${date}T${time}`);
+    console.log("[EVENTS_CREATE] Data recebida:", date);
+    console.log("[EVENTS_CREATE] Hora recebida:", time);
+    console.log("[EVENTS_CREATE] String concatenada:", `${date}T${time}`);
+    
+    // Criar data de forma mais robusta
+    const [year, month, day] = date.split('-').map(Number);
+    const [hours, minutes] = time.split(':').map(Number);
+    
+    // Criar data usando UTC para evitar problemas de fuso horário
+    const eventDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+    
+    console.log("[EVENTS_CREATE] Data criada:", eventDate);
+    console.log("[EVENTS_CREATE] Data ISO:", eventDate.toISOString());
+    console.log("[EVENTS_CREATE] Horário local:", eventDate.toLocaleString('pt-BR'));
 
     const event = await prisma.event.create({
       data: {
