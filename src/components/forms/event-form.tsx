@@ -20,7 +20,9 @@ import { format } from "date-fns";
 
 const formSchema = z.object({
   title: z.string().min(3, "O título deve ter no mínimo 3 caracteres"),
-  description: z.string().min(10, "A descrição deve ter no mínimo 10 caracteres"),
+  description: z
+    .string()
+    .min(10, "A descrição deve ter no mínimo 10 caracteres"),
   date: z.string().min(1, "A data é obrigatória"),
   time: z.string().min(1, "O horário é obrigatório"),
   location: z.string().min(5, "O local deve ter no mínimo 5 caracteres"),
@@ -42,7 +44,8 @@ export function EventForm() {
       date: format(new Date(), "yyyy-MM-dd"),
       time: "19:00",
       location: "",
-      message: "Olá {{NOME}}, você está convidado(a) para {{EVENTO}}! Para confirmar sua presença, acesse: {{LINK}}",
+      message:
+        "Olá {{NOME}}, você está convidado(a) para {{EVENTO}}! Para confirmar sua presença, acesse: {{LINK}}",
     },
   });
 
@@ -74,7 +77,9 @@ export function EventForm() {
       router.refresh();
     } catch (error) {
       console.error("[EVENT_CREATE]", error);
-      toast.error(error instanceof Error ? error.message : "Erro ao criar evento");
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao criar evento"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +162,10 @@ export function EventForm() {
             <FormItem>
               <FormLabel>Mensagem do Convite</FormLabel>
               <FormControl>
-                <Input placeholder="Mensagem que será enviada via WhatsApp" {...field} />
+                <Input
+                  placeholder="Mensagem que será enviada via WhatsApp"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -187,4 +195,4 @@ export function EventForm() {
       </form>
     </Form>
   );
-} 
+}

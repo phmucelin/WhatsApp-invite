@@ -4,4 +4,4 @@ import { MessagesList } from "@/components/dashboard/messages-list";
 
 export default function MessagesPage() {
   return <MessagesList />;
-} 
+}

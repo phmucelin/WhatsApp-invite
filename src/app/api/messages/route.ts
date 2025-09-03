@@ -38,4 +38,4 @@ export async function GET() {
     console.error("[MESSAGES_GET]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
-} 
+}

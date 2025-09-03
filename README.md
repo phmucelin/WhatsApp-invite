@@ -46,16 +46,19 @@ BLOB_READ_WRITE_TOKEN=
 
 1. Clone o repositório
 2. Instale as dependências:
+
 ```bash
 npm install
 ```
 
 3. Execute as migrações do banco de dados:
+
 ```bash
 npx prisma migrate dev
 ```
 
 4. Inicie o servidor de desenvolvimento:
+
 ```bash
 npm run dev
 ```

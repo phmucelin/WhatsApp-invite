@@ -34,4 +34,4 @@ export async function POST() {
     console.error("[EVENTS_CLEAR]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
-} 
+}

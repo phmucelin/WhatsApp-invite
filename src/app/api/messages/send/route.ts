@@ -41,13 +41,13 @@ export async function POST(request: Request) {
     }
 
     // Preparar a mensagem melhorada com emojis e informações
-    const eventDate = new Date(guest.event.date).toLocaleDateString('pt-BR', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    const eventDate = new Date(guest.event.date).toLocaleDateString("pt-BR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
 
     let message = guest.event.message
@@ -130,4 +130,4 @@ ${message}
     console.error("[MESSAGES_SEND]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
-} 
+}

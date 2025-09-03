@@ -35,10 +35,14 @@ export async function DELETE(request: Request) {
     });
 
     if (!event) {
-      return new NextResponse("Event not found or unauthorized", { status: 404 });
+      return new NextResponse("Event not found or unauthorized", {
+        status: 404,
+      });
     }
 
-    console.log(`[DELETE_EVENT] Deletando evento ${event.title} com ${event._count.guests} convidados`);
+    console.log(
+      `[DELETE_EVENT] Deletando evento ${event.title} com ${event._count.guests} convidados`
+    );
 
     // Deletar o evento e todos os convidados
     // Primeiro deletar todos os convidados
@@ -65,4 +69,4 @@ export async function DELETE(request: Request) {
     console.error("[DELETE_EVENT]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
-} 
+}

@@ -12,17 +12,26 @@ interface DeleteEventProps {
   onDelete: () => void;
 }
 
-export function DeleteEvent({ eventId, eventTitle, guestCount, onDelete }: DeleteEventProps) {
+export function DeleteEvent({
+  eventId,
+  eventTitle,
+  guestCount,
+  onDelete,
+}: DeleteEventProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm(`Tem certeza que deseja deletar o evento "${eventTitle}"? Esta ação não pode ser desfeita e ${guestCount} convidados serão removidos.`)) {
+    if (
+      !confirm(
+        `Tem certeza que deseja deletar o evento "${eventTitle}"? Esta ação não pode ser desfeita e ${guestCount} convidados serão removidos.`
+      )
+    ) {
       return;
     }
 
     try {
       setIsDeleting(true);
-      
+
       const response = await fetch("/api/events/delete", {
         method: "DELETE",
         headers: {
@@ -36,11 +45,11 @@ export function DeleteEvent({ eventId, eventTitle, guestCount, onDelete }: Delet
       }
 
       const result = await response.json();
-      
+
       toast.success(
         `Evento "${eventTitle}" deletado com sucesso! ${result.deletedGuests} convidados removidos.`
       );
-      
+
       onDelete();
     } catch (error) {
       console.error("Erro ao deletar evento:", error);
@@ -61,4 +70,4 @@ export function DeleteEvent({ eventId, eventTitle, guestCount, onDelete }: Delet
       <Trash2 className="h-4 w-4" />
     </Button>
   );
-} 
+}

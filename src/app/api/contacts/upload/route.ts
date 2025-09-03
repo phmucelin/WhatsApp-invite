@@ -60,10 +60,9 @@ export async function POST(request: Request) {
     );
 
     if (!hasRequiredColumns) {
-      return new NextResponse(
-        "CSV must have NOME and NUMERO columns",
-        { status: 400 }
-      );
+      return new NextResponse("CSV must have NOME and NUMERO columns", {
+        status: 400,
+      });
     }
 
     // Processar os contatos em lote
@@ -100,4 +99,4 @@ export async function POST(request: Request) {
     console.error("[CONTACTS_UPLOAD]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
-} 
+}

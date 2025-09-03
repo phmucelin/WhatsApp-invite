@@ -58,7 +58,10 @@ export function ContactUpload() {
       }
 
       // Aceitar tanto text/csv quanto application/vnd.ms-excel (alguns sistemas usam este MIME type para CSV)
-      if (file.type !== "text/csv" && file.type !== "application/vnd.ms-excel") {
+      if (
+        file.type !== "text/csv" &&
+        file.type !== "application/vnd.ms-excel"
+      ) {
         toast.error("Por favor, selecione um arquivo CSV");
         return;
       }
@@ -84,7 +87,9 @@ export function ContactUpload() {
       router.refresh();
     } catch (error) {
       console.error("[CONTACTS_UPLOAD]", error);
-      toast.error(error instanceof Error ? error.message : "Erro ao importar contatos");
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao importar contatos"
+      );
     } finally {
       setIsLoading(false);
       // Limpa o input para permitir selecionar o mesmo arquivo novamente
@@ -101,7 +106,7 @@ export function ContactUpload() {
   }
 
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex items-center gap-4">
       <Select
         value={selectedEvent}
         onValueChange={setSelectedEvent}
@@ -126,7 +131,7 @@ export function ContactUpload() {
           disabled={isLoading}
           className="max-w-xs"
         />
-        <p className="text-xs text-muted-foreground mt-1">
+        <p className="mt-1 text-xs text-muted-foreground">
           O arquivo CSV deve ter as colunas: NOME, NUMERO
         </p>
       </div>
@@ -136,4 +141,4 @@ export function ContactUpload() {
       </Button>
     </div>
   );
-} 
+}

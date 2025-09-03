@@ -57,57 +57,64 @@ export default function ContactsPage() {
 
   function calculateStats(contactsList: Guest[]) {
     const totalContacts = contactsList.length;
-    const sentInvites = contactsList.filter(c => c.sendStatus === "SENT").length;
-    const confirmedGuests = contactsList.filter(c => c.rsvpStatus === "CONFIRMED").length;
-    
+    const sentInvites = contactsList.filter(
+      (c) => c.sendStatus === "SENT"
+    ).length;
+    const confirmedGuests = contactsList.filter(
+      (c) => c.rsvpStatus === "CONFIRMED"
+    ).length;
+
     setStats({
       total: totalContacts,
       sent: sentInvites,
-      confirmed: confirmedGuests
+      confirmed: confirmedGuests,
     });
   }
 
-  const handleFiltersChange = useCallback((filters: FiltersType) => {
-    let filtered = [...contacts];
+  const handleFiltersChange = useCallback(
+    (filters: FiltersType) => {
+      let filtered = [...contacts];
 
-    // Filtro por nome
-    if (filters.name) {
-      filtered = filtered.filter(contact => 
-        contact.name.toLowerCase().includes(filters.name.toLowerCase())
-      );
-    }
+      // Filtro por nome
+      if (filters.name) {
+        filtered = filtered.filter((contact) =>
+          contact.name.toLowerCase().includes(filters.name.toLowerCase())
+        );
+      }
 
-    // Filtro por telefone
-    if (filters.phone) {
-      filtered = filtered.filter(contact => 
-        contact.phoneNumber.includes(filters.phone)
-      );
-    }
+      // Filtro por telefone
+      if (filters.phone) {
+        filtered = filtered.filter((contact) =>
+          contact.phoneNumber.includes(filters.phone)
+        );
+      }
 
-    // Filtro por evento
-    if (filters.eventId && filters.eventId !== "all") {
-      filtered = filtered.filter(contact => 
-        contact.eventId === filters.eventId
-      );
-    }
+      // Filtro por evento
+      if (filters.eventId && filters.eventId !== "all") {
+        filtered = filtered.filter(
+          (contact) => contact.eventId === filters.eventId
+        );
+      }
 
-    // Filtro por status RSVP
-    if (filters.status && filters.status !== "all") {
-      filtered = filtered.filter(contact => 
-        contact.rsvpStatus === filters.status
-      );
-    }
+      // Filtro por status RSVP
+      if (filters.status && filters.status !== "all") {
+        filtered = filtered.filter(
+          (contact) => contact.rsvpStatus === filters.status
+        );
+      }
 
-    // Filtro por status de envio
-    if (filters.sendStatus && filters.sendStatus !== "all") {
-      filtered = filtered.filter(contact => 
-        contact.sendStatus === filters.sendStatus
-      );
-    }
+      // Filtro por status de envio
+      if (filters.sendStatus && filters.sendStatus !== "all") {
+        filtered = filtered.filter(
+          (contact) => contact.sendStatus === filters.sendStatus
+        );
+      }
 
-    setFilteredContacts(filtered);
-    calculateStats(filtered);
-  }, [contacts]);
+      setFilteredContacts(filtered);
+      calculateStats(filtered);
+    },
+    [contacts]
+  );
 
   return (
     <div className="space-y-6">
@@ -159,13 +166,15 @@ export default function ContactsPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="py-8 text-center">
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
               <p className="mt-2 text-gray-600">Carregando contatos...</p>
             </div>
           ) : filteredContacts.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              {contacts.length === 0 ? "Nenhum contato importado ainda." : "Nenhum contato encontrado com os filtros aplicados."}
+            <div className="py-8 text-center text-gray-500">
+              {contacts.length === 0
+                ? "Nenhum contato importado ainda."
+                : "Nenhum contato encontrado com os filtros aplicados."}
             </div>
           ) : (
             <Table>
@@ -181,26 +190,35 @@ export default function ContactsPage() {
                 {filteredContacts.map((contact: Guest) => (
                   <TableRow key={contact.id}>
                     <TableCell>{contact.name}</TableCell>
-                    <TableCell>{formatPhoneNumber(contact.phoneNumber)}</TableCell>
                     <TableCell>
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        contact.sendStatus === "SENT" 
-                          ? "text-green-600 bg-green-100" 
-                          : "text-yellow-600 bg-yellow-100"
-                      }`}>
+                      {formatPhoneNumber(contact.phoneNumber)}
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                          contact.sendStatus === "SENT"
+                            ? "bg-green-100 text-green-600"
+                            : "bg-yellow-100 text-yellow-600"
+                        }`}
+                      >
                         {contact.sendStatus === "SENT" ? "Enviado" : "Pendente"}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        contact.rsvpStatus === "CONFIRMED" 
-                          ? "text-green-600 bg-green-100"
+                      <span
+                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                          contact.rsvpStatus === "CONFIRMED"
+                            ? "bg-green-100 text-green-600"
+                            : contact.rsvpStatus === "DECLINED"
+                              ? "bg-red-100 text-red-600"
+                              : "bg-yellow-100 text-yellow-600"
+                        }`}
+                      >
+                        {contact.rsvpStatus === "CONFIRMED"
+                          ? "Confirmado"
                           : contact.rsvpStatus === "DECLINED"
-                          ? "text-red-600 bg-red-100"
-                          : "text-yellow-600 bg-yellow-100"
-                      }`}>
-                        {contact.rsvpStatus === "CONFIRMED" ? "Confirmado" : 
-                         contact.rsvpStatus === "DECLINED" ? "Declinado" : "Aguardando"}
+                            ? "Declinado"
+                            : "Aguardando"}
                       </span>
                     </TableCell>
                   </TableRow>
@@ -212,4 +230,4 @@ export default function ContactsPage() {
       </Card>
     </div>
   );
-} 
+}

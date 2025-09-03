@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function NewEventPage() {
   return (
-    <div className="max-w-2xl mx-auto py-6">
+    <div className="mx-auto max-w-2xl py-6">
       <Card>
         <CardHeader>
           <CardTitle>Novo Evento</CardTitle>
@@ -14,4 +14,4 @@ export default function NewEventPage() {
       </Card>
     </div>
   );
-} 
+}

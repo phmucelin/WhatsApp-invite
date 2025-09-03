@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-export function ClearContacts() {
-  const router = useRouter();
+interface ClearContactsProps {
+  onClear?: () => void;
+}
+
+export function ClearContacts({ onClear }: ClearContactsProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleClear() {
@@ -23,7 +25,9 @@ export function ClearContacts() {
       }
 
       toast.success("Contatos removidos com sucesso!");
-      router.refresh();
+      if (onClear) {
+        onClear();
+      }
     } catch (error) {
       console.error("[CLEAR_CONTACTS]", error);
       toast.error("Erro ao remover contatos");
@@ -39,8 +43,8 @@ export function ClearContacts() {
       onClick={handleClear}
       disabled={isLoading}
     >
-      <Trash2 className="h-4 w-4 mr-2" />
+      <Trash2 className="mr-2 h-4 w-4" />
       {isLoading ? "Removendo..." : "Limpar Contatos"}
     </Button>
   );
-} 
+}

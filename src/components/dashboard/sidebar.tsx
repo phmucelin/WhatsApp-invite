@@ -48,4 +48,4 @@ export function DashboardSidebar() {
       </nav>
     </aside>
   );
-} 
+}

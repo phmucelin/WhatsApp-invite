@@ -52,9 +52,9 @@ export function RsvpForm({ guestId, name }: RsvpFormProps) {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center py-6"
+        className="py-6 text-center"
       >
-        <h3 className="text-xl font-semibold mb-2">Obrigado pela resposta!</h3>
+        <h3 className="mb-2 text-xl font-semibold">Obrigado pela resposta!</h3>
         <p className="text-sm text-muted-foreground">
           Sua resposta foi registrada com sucesso.
         </p>
@@ -65,14 +65,12 @@ export function RsvpForm({ guestId, name }: RsvpFormProps) {
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <h3 className="text-xl font-semibold mb-2">
-          Olá, {name}!
-        </h3>
+        <h3 className="mb-2 text-xl font-semibold">Olá, {name}!</h3>
         <p className="text-sm text-muted-foreground">
           Por favor, confirme sua presença:
         </p>
       </div>
-      <div className="flex gap-4 justify-center">
+      <div className="flex justify-center gap-4">
         <Button
           onClick={() => handleResponse(true)}
           disabled={isLoading}
@@ -93,4 +91,4 @@ export function RsvpForm({ guestId, name }: RsvpFormProps) {
       </div>
     </div>
   );
-} 
+}

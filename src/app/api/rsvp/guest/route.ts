@@ -5,20 +5,20 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   console.log("[GUEST_API] GET request received");
-  
+
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-  
+  const id = searchParams.get("id");
+
   console.log("[GUEST_API] Guest ID from query:", id);
-  
+
   if (!id) {
     console.log("[GUEST_API] No ID provided, returning 400");
     return new NextResponse("Guest ID is required", { status: 400 });
   }
-  
+
   try {
     console.log("[GUEST_API] Querying database for guest:", id);
-    
+
     const guest = await prisma.guest.findUnique({
       where: { id },
       include: {
@@ -43,14 +43,14 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   console.log("[GUEST_API] POST request received");
-  
+
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-  
+  const id = searchParams.get("id");
+
   if (!id) {
     return new NextResponse("Guest ID is required", { status: 400 });
   }
-  
+
   try {
     const { status } = await request.json();
     console.log("[GUEST_API] Status received:", status);
@@ -75,4 +75,4 @@ export async function POST(request: Request) {
     console.error("[GUEST_API] Error in POST:", error);
     return new NextResponse("Internal error", { status: 500 });
   }
-} 
+}

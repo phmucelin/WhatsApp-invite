@@ -18,7 +18,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" className="h-full">
-      <body className={`${inter.className} min-h-full bg-background text-foreground antialiased`}>
+      <body
+        className={`${inter.className} min-h-full bg-background text-foreground antialiased`}
+      >
         <AuthProvider>
           {children}
           <SonnerProvider />

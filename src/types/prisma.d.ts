@@ -44,4 +44,4 @@ export type EventWithGuests = Prisma.EventGetPayload<{
   };
 }> & {
   guests: GuestStatus[];
-}; 
+};

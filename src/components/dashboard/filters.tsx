@@ -3,7 +3,13 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Filter, X } from "lucide-react";
 
@@ -26,7 +32,12 @@ interface FiltersProps {
   showPhoneFilter?: boolean;
 }
 
-export function Filters({ onFiltersChange, showEventFilter = true, showStatusFilter = true, showPhoneFilter = true }: FiltersProps) {
+export function Filters({
+  onFiltersChange,
+  showEventFilter = true,
+  showStatusFilter = true,
+  showPhoneFilter = true,
+}: FiltersProps) {
   const [events, setEvents] = useState<Event[]>([]);
   const [nameFilter, setNameFilter] = useState("");
   const [phoneFilter, setPhoneFilter] = useState("");
@@ -39,8 +50,6 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
       loadEvents();
     }
   }, [showEventFilter]);
-
-
 
   async function loadEvents() {
     try {
@@ -62,7 +71,12 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
     setSendStatusFilter("all");
   }
 
-  const hasActiveFilters = nameFilter || phoneFilter || eventFilter || statusFilter || sendStatusFilter;
+  const hasActiveFilters =
+    nameFilter ||
+    phoneFilter ||
+    eventFilter ||
+    statusFilter ||
+    sendStatusFilter;
 
   return (
     <Card className="mb-6">
@@ -73,12 +87,12 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {/* Filtro por Nome */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Nome</label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
               <Input
                 placeholder="Buscar por nome..."
                 value={nameFilter}
@@ -91,7 +105,9 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
           {/* Filtro por Telefone */}
           {showPhoneFilter && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Telefone</label>
+              <label className="text-sm font-medium text-gray-700">
+                Telefone
+              </label>
               <Input
                 placeholder="Buscar por telefone..."
                 value={phoneFilter}
@@ -103,7 +119,9 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
           {/* Filtro por Evento */}
           {showEventFilter && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Evento</label>
+              <label className="text-sm font-medium text-gray-700">
+                Evento
+              </label>
               <Select value={eventFilter} onValueChange={setEventFilter}>
                 <SelectTrigger>
                   <SelectValue placeholder="Todos os eventos" />
@@ -123,7 +141,9 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
           {/* Filtro por Status RSVP */}
           {showStatusFilter && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Status RSVP</label>
+              <label className="text-sm font-medium text-gray-700">
+                Status RSVP
+              </label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger>
                   <SelectValue placeholder="Todos os status" />
@@ -140,8 +160,13 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
 
           {/* Filtro por Status de Envio */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Status Envio</label>
-            <Select value={sendStatusFilter} onValueChange={setSendStatusFilter}>
+            <label className="text-sm font-medium text-gray-700">
+              Status Envio
+            </label>
+            <Select
+              value={sendStatusFilter}
+              onValueChange={setSendStatusFilter}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Todos os envios" />
               </SelectTrigger>
@@ -172,7 +197,7 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
             <Filter className="h-4 w-4" />
             Aplicar Filtros
           </Button>
-          
+
           {hasActiveFilters && (
             <Button
               variant="outline"
@@ -187,4 +212,4 @@ export function Filters({ onFiltersChange, showEventFilter = true, showStatusFil
       </CardContent>
     </Card>
   );
-} 
+}

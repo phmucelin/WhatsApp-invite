@@ -9,10 +9,10 @@ export async function GET(
 ) {
   console.log("[RSVP_API] GET request received for ID:", params.id);
   console.log("[RSVP_API] Request URL:", request.url);
-  
+
   try {
     console.log("[RSVP_API] Querying database for guest:", params.id);
-    
+
     const guest = await prisma.guest.findUnique({
       where: { id: params.id },
       include: {
@@ -40,7 +40,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   console.log("[RSVP_API] POST request received for ID:", params.id);
-  
+
   try {
     const { status } = await request.json();
     console.log("[RSVP_API] Status received:", status);
@@ -65,4 +65,4 @@ export async function POST(
     console.error("[RSVP_API] Error in POST:", error);
     return new NextResponse("Internal error", { status: 500 });
   }
-} 
+}

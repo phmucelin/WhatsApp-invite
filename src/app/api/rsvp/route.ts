@@ -30,4 +30,4 @@ export async function POST(request: Request) {
     console.error("[RSVP_POST]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
-} 
+}

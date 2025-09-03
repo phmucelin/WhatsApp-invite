@@ -7,7 +7,8 @@ import { Plus } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { EventWithGuests, GuestStatus } from "@/types/prisma";
-// import { ClearEvents } from "@/components/dashboard/clear-events";
+import { ClearEvents } from "@/components/dashboard/clear-events";
+import { ClearContacts } from "@/components/dashboard/clear-contacts";
 import { DeleteEvent } from "@/components/dashboard/delete-event";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -36,9 +37,18 @@ export default function DashboardPage() {
   }, []);
 
   const totalEvents = events.length;
-  const totalInvites = events.reduce((acc: number, event: EventWithGuests) => acc + event._count.guests, 0);
-  const totalConfirmed = events.reduce((acc: number, event: EventWithGuests) =>
-    acc + event.guests.filter((guest: GuestStatus) => guest.rsvpStatus === "CONFIRMED").length, 0);
+  const totalInvites = events.reduce(
+    (acc: number, event: EventWithGuests) => acc + event._count.guests,
+    0
+  );
+  const totalConfirmed = events.reduce(
+    (acc: number, event: EventWithGuests) =>
+      acc +
+      event.guests.filter(
+        (guest: GuestStatus) => guest.rsvpStatus === "CONFIRMED"
+      ).length,
+    0
+  );
 
   return (
     <div className="space-y-6">
@@ -51,7 +61,8 @@ export default function DashboardPage() {
               Novo Evento
             </Link>
           </Button>
-          {/* <ClearEvents /> */}
+          <ClearEvents onClear={fetchEvents} />
+          <ClearContacts onClear={fetchEvents} />
         </div>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -86,11 +97,11 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center text-sm text-muted-foreground py-6">
+            <div className="py-6 text-center text-sm text-muted-foreground">
               Carregando eventos...
             </div>
           ) : events.length === 0 ? (
-            <div className="text-center text-sm text-muted-foreground py-6">
+            <div className="py-6 text-center text-sm text-muted-foreground">
               Nenhum evento criado ainda.
             </div>
           ) : (
@@ -122,14 +133,14 @@ export default function DashboardPage() {
                       </p>
                       <div className="flex gap-4 text-sm">
                         <p>
-                          <strong>Convidados:</strong>{" "}
-                          {event._count.guests}
+                          <strong>Convidados:</strong> {event._count.guests}
                         </p>
                         <p>
                           <strong>Confirmados:</strong>{" "}
                           {
                             event.guests.filter(
-                              (guest: GuestStatus) => guest.rsvpStatus === "CONFIRMED"
+                              (guest: GuestStatus) =>
+                                guest.rsvpStatus === "CONFIRMED"
                             ).length
                           }
                         </p>
@@ -137,7 +148,8 @@ export default function DashboardPage() {
                           <strong>Enviados:</strong>{" "}
                           {
                             event.guests.filter(
-                              (guest: GuestStatus) => guest.sendStatus === "SENT"
+                              (guest: GuestStatus) =>
+                                guest.sendStatus === "SENT"
                             ).length
                           }
                         </p>
@@ -152,4 +164,4 @@ export default function DashboardPage() {
       </Card>
     </div>
   );
-} 
+}

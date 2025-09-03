@@ -27,4 +27,4 @@ export async function POST() {
     console.error("[CONTACTS_CLEAR]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
-} 
+}

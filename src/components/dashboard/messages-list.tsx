@@ -44,7 +44,9 @@ async function getStats() {
 export function MessagesList() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [messages, setMessages] = useState<GuestWithEvent[]>([]);
-  const [filteredMessages, setFilteredMessages] = useState<GuestWithEvent[]>([]);
+  const [filteredMessages, setFilteredMessages] = useState<GuestWithEvent[]>(
+    []
+  );
   const [stats, setStats] = useState<StatsRecord[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -67,56 +69,64 @@ export function MessagesList() {
     }
   }
 
-  const handleFiltersChange = useCallback((filters: {
-    name: string;
-    phone: string;
-    eventId: string;
-    status: string;
-    sendStatus: string;
-  }) => {
-    let filtered = [...messages];
+  const handleFiltersChange = useCallback(
+    (filters: {
+      name: string;
+      phone: string;
+      eventId: string;
+      status: string;
+      sendStatus: string;
+    }) => {
+      let filtered = [...messages];
 
-    // Filtro por nome
-    if (filters.name) {
-      filtered = filtered.filter(message => 
-        message.name.toLowerCase().includes(filters.name.toLowerCase())
-      );
-    }
+      // Filtro por nome
+      if (filters.name) {
+        filtered = filtered.filter((message) =>
+          message.name.toLowerCase().includes(filters.name.toLowerCase())
+        );
+      }
 
-    // Filtro por telefone
-    if (filters.phone) {
-      filtered = filtered.filter(message => 
-        message.phoneNumber.includes(filters.phone)
-      );
-    }
+      // Filtro por telefone
+      if (filters.phone) {
+        filtered = filtered.filter((message) =>
+          message.phoneNumber.includes(filters.phone)
+        );
+      }
 
-    // Filtro por evento
-    if (filters.eventId && filters.eventId !== "all") {
-      filtered = filtered.filter(message => 
-        message.eventId === filters.eventId
-      );
-    }
+      // Filtro por evento
+      if (filters.eventId && filters.eventId !== "all") {
+        filtered = filtered.filter(
+          (message) => message.eventId === filters.eventId
+        );
+      }
 
-    // Filtro por status RSVP
-    if (filters.status && filters.status !== "all") {
-      filtered = filtered.filter(message => 
-        message.rsvpStatus === filters.status
-      );
-    }
+      // Filtro por status RSVP
+      if (filters.status && filters.status !== "all") {
+        filtered = filtered.filter(
+          (message) => message.rsvpStatus === filters.status
+        );
+      }
 
-    // Filtro por status de envio
-    if (filters.sendStatus && filters.sendStatus !== "all") {
-      filtered = filtered.filter(message => 
-        message.sendStatus === filters.sendStatus
-      );
-    }
+      // Filtro por status de envio
+      if (filters.sendStatus && filters.sendStatus !== "all") {
+        filtered = filtered.filter(
+          (message) => message.sendStatus === filters.sendStatus
+        );
+      }
 
-    setFilteredMessages(filtered);
-  }, [messages]);
+      setFilteredMessages(filtered);
+    },
+    [messages]
+  );
 
-  const totalMessages = stats.reduce((acc: number, curr: StatsRecord) => acc + curr._count, 0);
-  const sentMessages = stats.find((s: StatsRecord) => s.sendStatus === "SENT")?._count ?? 0;
-  const pendingMessages = stats.find((s: StatsRecord) => s.sendStatus === "PENDING")?._count ?? 0;
+  const totalMessages = stats.reduce(
+    (acc: number, curr: StatsRecord) => acc + curr._count,
+    0
+  );
+  const sentMessages =
+    stats.find((s: StatsRecord) => s.sendStatus === "SENT")?._count ?? 0;
+  const pendingMessages =
+    stats.find((s: StatsRecord) => s.sendStatus === "PENDING")?._count ?? 0;
 
   async function handleSendMessage(guestId: string) {
     try {
@@ -142,7 +152,9 @@ export function MessagesList() {
       // Abrir o WhatsApp Web em uma nova aba
       const newWindow = window.open(data.whatsappUrl, "_blank");
       if (!newWindow) {
-        throw new Error("O navegador bloqueou a abertura da nova aba. Por favor, permita popups para este site.");
+        throw new Error(
+          "O navegador bloqueou a abertura da nova aba. Por favor, permita popups para este site."
+        );
       }
 
       // Atualizar os dados
@@ -150,7 +162,9 @@ export function MessagesList() {
       toast.success("Mensagem preparada para envio!");
     } catch (error) {
       console.error("[SEND_MESSAGE]", error);
-      toast.error(error instanceof Error ? error.message : "Erro ao preparar mensagem");
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao preparar mensagem"
+      );
     } finally {
       setIsLoading(null);
     }
@@ -185,7 +199,9 @@ export function MessagesList() {
             <CardTitle>Mensagens Pendentes</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-yellow-600">{pendingMessages}</p>
+            <p className="text-3xl font-bold text-yellow-600">
+              {pendingMessages}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -202,13 +218,15 @@ export function MessagesList() {
         </CardHeader>
         <CardContent>
           {isLoadingData ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="py-8 text-center">
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
               <p className="mt-2 text-gray-600">Carregando mensagens...</p>
             </div>
           ) : filteredMessages.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              {messages.length === 0 ? "Nenhuma mensagem encontrada." : "Nenhuma mensagem encontrada com os filtros aplicados."}
+            <div className="py-8 text-center text-gray-500">
+              {messages.length === 0
+                ? "Nenhuma mensagem encontrada."
+                : "Nenhuma mensagem encontrada com os filtros aplicados."}
             </div>
           ) : (
             <Table>
@@ -225,42 +243,59 @@ export function MessagesList() {
               <TableBody>
                 {filteredMessages.map((message) => (
                   <TableRow key={message.id}>
-                    <TableCell className="font-medium">{message.name}</TableCell>
-                    <TableCell>{formatPhoneNumber(message.phoneNumber)}</TableCell>
+                    <TableCell className="font-medium">
+                      {message.name}
+                    </TableCell>
+                    <TableCell>
+                      {formatPhoneNumber(message.phoneNumber)}
+                    </TableCell>
                     <TableCell>
                       <div>
                         <p className="font-medium">{message.event.title}</p>
                         <p className="text-sm text-gray-500">
-                          {format(new Date(message.event.date), "dd/MM/yyyy 'às' HH:mm")}
+                          {format(
+                            new Date(message.event.date),
+                            "dd/MM/yyyy 'às' HH:mm"
+                          )}
                         </p>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        message.sendStatus === "SENT" 
-                          ? "text-green-600 bg-green-100" 
-                          : "text-yellow-600 bg-yellow-100"
-                      }`}>
+                      <span
+                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                          message.sendStatus === "SENT"
+                            ? "bg-green-100 text-green-600"
+                            : "bg-yellow-100 text-yellow-600"
+                        }`}
+                      >
                         {message.sendStatus === "SENT" ? "Enviado" : "Pendente"}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        message.rsvpStatus === "CONFIRMED" 
-                          ? "text-green-600 bg-green-100"
+                      <span
+                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                          message.rsvpStatus === "CONFIRMED"
+                            ? "bg-green-100 text-green-600"
+                            : message.rsvpStatus === "DECLINED"
+                              ? "bg-red-100 text-red-600"
+                              : "bg-yellow-100 text-yellow-600"
+                        }`}
+                      >
+                        {message.rsvpStatus === "CONFIRMED"
+                          ? "Confirmado"
                           : message.rsvpStatus === "DECLINED"
-                          ? "text-red-600 bg-red-100"
-                          : "text-yellow-600 bg-yellow-100"
-                      }`}>
-                        {message.rsvpStatus === "CONFIRMED" ? "Confirmado" : 
-                         message.rsvpStatus === "DECLINED" ? "Declinado" : "Aguardando"}
+                            ? "Declinado"
+                            : "Aguardando"}
                       </span>
                     </TableCell>
                     <TableCell>
                       <Button
                         size="sm"
                         onClick={() => handleSendMessage(message.id)}
-                        disabled={isLoading === message.id || message.sendStatus === "SENT"}
+                        disabled={
+                          isLoading === message.id ||
+                          message.sendStatus === "SENT"
+                        }
                         className="flex items-center gap-2"
                       >
                         <Send className="h-4 w-4" />
@@ -276,4 +311,4 @@ export function MessagesList() {
       </Card>
     </div>
   );
-} 
+}
