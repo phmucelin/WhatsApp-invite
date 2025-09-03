@@ -40,14 +40,39 @@ export async function POST(request: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Preparar a mensagem
-    const message = guest.event.message
+    // Preparar a mensagem melhorada com emojis e informações
+    const eventDate = new Date(guest.event.date).toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    let message = guest.event.message
       .replace("{{NOME}}", guest.name)
       .replace("{{EVENTO}}", guest.event.title)
+      .replace("{{DATA}}", eventDate)
+      .replace("{{LOCAL}}", guest.event.location)
       .replace(
         "{{LINK}}",
-        `${process.env.NEXTAUTH_URL}/rsvp/${guest.id}`
+        `https://invite-whats-app.vercel.app/rsvp/${guest.id}`
       );
+
+    // Adicionar emojis e formatação se a mensagem não tiver
+    if (!message.includes("🎉") && !message.includes("📅")) {
+      message = `🎉 *Convite Especial* 🎉
+
+${message}
+
+📅 *Data:* ${eventDate}
+📍 *Local:* ${guest.event.location}
+
+🔗 *Link do Convite:* ${`https://invite-whats-app.vercel.app/rsvp/${guest.id}`}
+
+✨ *Aguardo sua confirmação!* ✨`;
+    }
 
     // Gerar o link do WhatsApp Web
     const phoneNumber = normalizePhoneNumber(guest.phoneNumber);
