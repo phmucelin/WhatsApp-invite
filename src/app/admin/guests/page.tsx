@@ -8,15 +8,15 @@ interface Guest {
   phoneNumber: string;
   eventId: string;
   eventTitle: string;
-  eventDate: string;
+  eventDate: Date;
   rsvpStatus: "WAITING" | "CONFIRMED" | "DECLINED";
-  createdAt: string;
+  createdAt: Date;
 }
 
 interface Event {
   id: string;
   title: string;
-  date: string;
+  date: Date;
   location: string;
   guestCount: number;
 }

@@ -11,7 +11,7 @@ interface Guest {
   event: {
     title: string;
     description: string;
-    date: string;
+    date: Date;
     location: string;
     imageUrl?: string;
     message: string;

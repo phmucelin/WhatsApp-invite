@@ -73,7 +73,7 @@ export async function GET(request: Request) {
       eventId: string;
       event: { id: string; title: string; date: Date };
       rsvpStatus: string;
-      createdAt: string;
+      createdAt: Date;
     }) => ({
       id: guest.id,
       name: guest.name,

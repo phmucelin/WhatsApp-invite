@@ -35,7 +35,8 @@ export async function POST(request: Request) {
       },
     });
 
-    const { ...result } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: userPassword, ...result } = user;
 
     return NextResponse.json(result);
   } catch (error) {

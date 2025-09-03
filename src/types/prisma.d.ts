@@ -15,6 +15,7 @@ export type GuestWithEvent = Prisma.GuestGetPayload<{
     event: {
       select: {
         title: true;
+        date: true;
       };
     };
   };

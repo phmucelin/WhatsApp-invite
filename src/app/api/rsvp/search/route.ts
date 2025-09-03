@@ -52,7 +52,7 @@ export async function GET(request: Request) {
       id: string;
       name: string;
       phoneNumber: string;
-      event: { title: string; date: string };
+      event: { title: string; date: Date };
       rsvpStatus: string;
     }) => ({
       id: guest.id,

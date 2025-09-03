@@ -23,6 +23,7 @@ export async function GET() {
         event: {
           select: {
             title: true,
+            date: true,
           },
         },
       },

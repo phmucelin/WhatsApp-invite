@@ -12,7 +12,7 @@ export default function RsvpRedirectPage() {
     name: string;
     phoneNumber: string;
     eventTitle: string;
-    eventDate: string;
+    eventDate: Date;
     rsvpStatus: string;
   }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
