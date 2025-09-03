@@ -9,35 +9,52 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
+    console.log("[MESSAGES_SEND] Iniciando requisição");
+    
     const session = await getServerSession(authOptions);
+    console.log("[MESSAGES_SEND] Session:", session?.user?.id);
 
     if (!session?.user) {
+      console.log("[MESSAGES_SEND] Usuário não autenticado");
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { guestId } = await request.json();
+    const body = await request.json();
+    console.log("[MESSAGES_SEND] Body recebido:", body);
+    
+    const { guestId } = body;
 
     if (!guestId) {
+      console.log("[MESSAGES_SEND] Guest ID não fornecido");
       return new NextResponse("Guest ID is required", { status: 400 });
     }
+
+    console.log("[MESSAGES_SEND] Buscando guest:", guestId);
 
     // Buscar o convidado e o evento
     const guest = await prisma.guest.findUnique({
       where: {
         id: guestId,
-        sendStatus: "PENDING",
       },
       include: {
         event: true,
       },
     });
 
+    console.log("[MESSAGES_SEND] Guest encontrado:", guest ? "sim" : "não");
+
     if (!guest) {
+      console.log("[MESSAGES_SEND] Guest não encontrado");
       return new NextResponse("Guest not found", { status: 404 });
     }
 
+    console.log("[MESSAGES_SEND] Evento:", guest.event?.title);
+    console.log("[MESSAGES_SEND] Evento userId:", guest.event?.userId);
+    console.log("[MESSAGES_SEND] Session userId:", session.user.id);
+
     // Verificar se o evento pertence ao usuário
     if (guest.event.userId !== session.user.id) {
+      console.log("[MESSAGES_SEND] Usuário não autorizado para este evento");
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
