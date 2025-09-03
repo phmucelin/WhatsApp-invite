@@ -6,14 +6,16 @@ export async function GET() {
     console.log("[EVENTS_API] Listando todos os eventos");
     
     const events = await prisma.event.findMany({
-      select: {
-        id: true,
-        title: true,
-        date: true,
-        location: true,
+      include: {
         _count: {
           select: {
             guests: true
+          }
+        },
+        guests: {
+          select: {
+            sendStatus: true,
+            rsvpStatus: true
           }
         }
       },
@@ -24,23 +26,9 @@ export async function GET() {
 
     console.log("[EVENTS_API] Eventos encontrados:", events.length);
     
-    const eventsWithGuestCount = events.map((event: {
-      id: string;
-      title: string;
-      date: Date;
-      location: string;
-      _count: { guests: number };
-    }) => ({
-      id: event.id,
-      title: event.title,
-      date: event.date,
-      location: event.location,
-      guestCount: event._count.guests
-    }));
-
     return NextResponse.json({
       total: events.length,
-      events: eventsWithGuestCount,
+      events: events,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
