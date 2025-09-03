@@ -1,10 +1,11 @@
-export const dynamic = "force-dynamic";
-
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { uploadImage } from "@/lib/blob";
+
+// Força o endpoint a ser dinâmico
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
