@@ -137,7 +137,6 @@ export default function RsvpPage() {
 
   function showGuestSelection(guests: Guest[]) {
     const guestNames = guests.map((g) => g.name).join(", ");
-    const message = `Encontramos ${guests.length} convidados no sistema: ${guestNames}. Por favor, use o link correto do convite.`;
     // Removido o alert - a mensagem já aparece na interface
   }
 

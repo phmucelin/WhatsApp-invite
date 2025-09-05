@@ -87,7 +87,7 @@ export async function POST(request: Request) {
     console.log("[MESSAGES_SEND] Data formatada:", formattedDate);
     console.log("[MESSAGES_SEND] Horário extraído:", `${hours}:${minutes}`);
 
-    let message = guest.event.message
+    const message = guest.event.message
       .replace("{{NOME}}", guest.name)
       .replace("{{EVENTO}}", guest.event.title)
       .replace("{{DATA}}", formattedDate)
