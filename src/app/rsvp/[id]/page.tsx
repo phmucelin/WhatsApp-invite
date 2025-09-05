@@ -138,7 +138,7 @@ export default function RsvpPage() {
   function showGuestSelection(guests: Guest[]) {
     const guestNames = guests.map((g) => g.name).join(", ");
     const message = `Encontramos ${guests.length} convidados no sistema: ${guestNames}. Por favor, use o link correto do convite.`;
-    alert(message);
+    // Removido o alert - a mensagem já aparece na interface
   }
 
   async function handleRsvp(status: "CONFIRMED" | "DECLINED") {
@@ -175,11 +175,7 @@ export default function RsvpPage() {
       setHasResponded(true);
       setGuest((prev) => (prev ? { ...prev, rsvpStatus: status } : null));
 
-      if (status === "CONFIRMED") {
-        alert("Presença confirmada! Obrigado!");
-      } else {
-        alert("Obrigado pela resposta!");
-      }
+      // Removido os alerts que causavam o modal de confirmação
     } catch (error) {
       console.error("[RSVP_UPDATE]", error);
       alert("Erro ao confirmar presença: " + error);

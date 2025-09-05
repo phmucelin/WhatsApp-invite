@@ -97,20 +97,6 @@ export async function POST(request: Request) {
         `https://invite-whats-app.vercel.app/rsvp/${guest.id}`
       );
 
-    // Adicionar formatação calorosa se a mensagem não tiver
-    if (!message.includes("Convite Especial") && !message.includes("Data:")) {
-      message = `*Convite Especial* 
-
-${message}
-
-*Data:* ${formattedDate}
-*Local:* ${guest.event.location}
-
-*Link do Convite:* ${`https://invite-whats-app.vercel.app/rsvp/${guest.id}`}
-
-*Estou ansioso(a) para sua confirmação! Será um prazer ter você conosco!*`;
-    }
-
     // Usar a mensagem original sem emojis
     const finalMessage = message;
     
