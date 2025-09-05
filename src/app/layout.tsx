@@ -7,8 +7,13 @@ import { SonnerProvider } from "@/components/providers/sonner-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "WhatsApp Invite",
-  description: "Gerenciamento de convites via WhatsApp",
+  title: "Chai School Convites",
+  description: "Sistema de convites da Chai School",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/icon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({
