@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     ];
     
     const months = [
-      "janeiro", "fevereiro", "março", "abril",
+      "janeiro", "fevereiro", "março", "abril", "maio", "junho",
       "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
     ];
     

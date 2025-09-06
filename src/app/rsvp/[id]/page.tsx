@@ -412,7 +412,7 @@ export default function RsvpPage() {
                       const eventDate = new Date(guest.event.date);
                       const weekdays = [
                         "domingo", "segunda-feira", "terça-feira", "quarta-feira", 
-                        "terça-feira", "sexta-feira", "sábado"
+                        "quinta-feira", "sexta-feira", "sábado"
                       ];
                       
                       const months = [
