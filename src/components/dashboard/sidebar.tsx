@@ -2,50 +2,93 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Users, Calendar, Send } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { usePermissions } from "@/hooks/use-permissions";
+import {
+  Calendar,
+  Users,
+  MessageSquare,
+  Settings,
+  Shield,
+} from "lucide-react";
 
 const navigation = [
   {
     name: "Eventos",
     href: "/dashboard",
     icon: Calendar,
+    permission: "canAccessEvents",
   },
   {
-    name: "Contatos",
-    href: "/dashboard/contacts",
+    name: "Convidados",
+    href: "/dashboard/guests",
     icon: Users,
+    permission: "canAccessEvents",
   },
   {
-    name: "Envios",
+    name: "Mensagens",
     href: "/dashboard/messages",
-    icon: Send,
+    icon: MessageSquare,
+    permission: "canAccessEvents",
+  },
+  {
+    name: "Admin",
+    href: "/admin",
+    icon: Shield,
+    permission: "canAccessAdmin",
+  },
+  {
+    name: "Configurações",
+    href: "/dashboard/settings",
+    icon: Settings,
+    permission: "canAccessEvents",
   },
 ];
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const { canAccessAdmin, canAccessEvents } = usePermissions();
+
+  const filteredNavigation = navigation.filter((item) => {
+    if (item.permission === "canAccessAdmin") {
+      return canAccessAdmin;
+    }
+    if (item.permission === "canAccessEvents") {
+      return canAccessEvents;
+    }
+    return true;
+  });
 
   return (
-    <aside className="w-64 border-r bg-white">
-      <nav className="flex flex-col gap-2 p-4">
-        {navigation.map((item) => {
+    <div className="flex h-full w-64 flex-col bg-gray-900">
+      <div className="flex h-16 items-center px-6">
+        <h1 className="text-xl font-semibold text-white">Chai School</h1>
+      </div>
+      <nav className="flex-1 space-y-1 px-3 py-4">
+        {filteredNavigation.map((item) => {
           const isActive = pathname === item.href;
           return (
-            <Button
+            <Link
               key={item.name}
-              variant={isActive ? "secondary" : "ghost"}
-              className="justify-start gap-2"
-              asChild
+              href={item.href}
+              className={cn(
+                "group flex items-center rounded-md px-2 py-2 text-sm font-medium",
+                isActive
+                  ? "bg-gray-800 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
+              )}
             >
-              <Link href={item.href}>
-                <item.icon className="h-5 w-5" />
-                {item.name}
-              </Link>
-            </Button>
+              <item.icon
+                className={cn(
+                  "mr-3 h-5 w-5 flex-shrink-0",
+                  isActive ? "text-white" : "text-gray-400 group-hover:text-white"
+                )}
+              />
+              {item.name}
+            </Link>
           );
         })}
       </nav>
-    </aside>
+    </div>
   );
 }

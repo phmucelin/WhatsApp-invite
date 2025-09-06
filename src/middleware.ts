@@ -15,11 +15,18 @@ export async function middleware(request: NextRequest) {
     if (request.nextUrl.pathname === "/login") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
+
+    // Verificar permissões para rotas administrativas
+    if (request.nextUrl.pathname.startsWith("/admin")) {
+      if (token.role !== "ADMIN") {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login"],
+  matcher: ["/dashboard/:path*", "/login", "/admin/:path*"],
 };
