@@ -148,7 +148,11 @@ export async function POST(request: Request) {
     // Atualizar o status do envio
     console.log("[MESSAGES_SEND] Atualizando status do guest...");
     try {
-      const updateData: any = {
+      const updateData: {
+        sendStatus: "SENT";
+        lastSentAt: Date;
+        resendCount?: { increment: number };
+      } = {
         sendStatus: "SENT",
         lastSentAt: new Date(),
       };
