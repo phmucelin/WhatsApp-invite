@@ -117,48 +117,64 @@ export default function ContactsPage() {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Contatos</h2>
-        <div className="flex items-center gap-4">
-          <ContactUpload />
-          <ClearContacts />
-        </div>
-      </div>
+    <div className="main-container">
+      <div className="container mx-auto p-4">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="page-title text-4xl font-bold mb-2">Contatos</h2>
+              <p className="text-gray-600">Importe e gerencie seus contatos para envio de mensagens</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <ContactUpload />
+              <ClearContacts />
+            </div>
+          </div>
 
-      {/* Estatísticas */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Total de Contatos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{stats.total || 0}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Convites Enviados</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{stats.sent || 0}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Confirmações</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{stats.confirmed || 0}</p>
-          </CardContent>
-        </Card>
-      </div>
+          {/* Estatísticas */}
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="stats-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total de Contatos</p>
+                  <p className="stats-number">{stats.total || 0}</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">👥</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="stats-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Convites Enviados</p>
+                  <p className="stats-number text-blue-600">{stats.sent || 0}</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">📤</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="stats-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Confirmações</p>
+                  <p className="stats-number text-green-600">{stats.confirmed || 0}</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">✅</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      {/* Filtros */}
-      <Filters onFiltersChange={handleFiltersChange} />
+          {/* Filtros */}
+          <Filters onFiltersChange={handleFiltersChange} />
 
-      {/* Lista de Contatos */}
-      <Card>
+          {/* Lista de Contatos */}
+          <Card>
         <CardHeader>
           <CardTitle>
             Lista de Contatos ({filteredContacts.length} de {contacts.length})
@@ -226,8 +242,10 @@ export default function ContactsPage() {
               </TableBody>
             </Table>
           )}
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

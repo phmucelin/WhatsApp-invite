@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Settings,
   Shield,
+  UserPlus,
 } from "lucide-react";
 
 const navigation = [
@@ -17,6 +18,12 @@ const navigation = [
     name: "Eventos",
     href: "/dashboard",
     icon: Calendar,
+    permission: "canAccessEvents",
+  },
+  {
+    name: "Contatos",
+    href: "/dashboard/contacts",
+    icon: UserPlus,
     permission: "canAccessEvents",
   },
   {
