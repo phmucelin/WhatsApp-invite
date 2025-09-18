@@ -113,50 +113,6 @@ Teste de emojis para WhatsApp
       <div className="container mx-auto p-4">
         <h1 className="page-title text-4xl font-bold mb-8">Enviar Mensagem</h1>
 
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Enviar para um Número</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4">
-            <div>
-              <Label htmlFor="phoneNumber">Número de Telefone (com DDD)</Label>
-              <Input
-                id="phoneNumber"
-                type="tel"
-                placeholder="Ex: 11999999999"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="message">Mensagem</Label>
-              <textarea
-                id="message"
-                placeholder="Digite sua mensagem aqui..."
-                value={message}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
-                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </div>
-            <div className="flex items-center gap-4">
-              <Button onClick={handleSendMessage} disabled={isLoading} className="btn btn-primary">
-                <Send className="mr-2 h-4 w-4" />
-                {isLoading ? "Enviando..." : "Enviar Mensagem"}
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                onClick={handleTestEmojis}
-                className="btn btn-outline border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white"
-              >
-                <TestTube className="mr-2 h-4 w-4" />
-                Testar Emojis
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
         <MessagesList />
       </div>

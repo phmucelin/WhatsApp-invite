@@ -423,6 +423,59 @@ body {
   padding: 2rem;
 }
 
+/* Tema escuro */
+.dark .main-container {
+  background: #1a1a1a;
+}
+
+.dark .card {
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(40, 40, 40, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .stats-card {
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(40, 40, 40, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .page-title {
+  background: linear-gradient(135deg, var(--whatsapp-green) 0%, var(--whatsapp-green-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .stats-number {
+  background: linear-gradient(135deg, var(--whatsapp-green) 0%, var(--whatsapp-green-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .input {
+  background: rgba(30, 30, 30, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.dark .input:focus {
+  border-color: var(--whatsapp-green);
+  background: rgba(30, 30, 30, 1);
+}
+
+.dark .input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.dark .table th {
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.8) 0%, rgba(40, 40, 40, 0.8) 100%);
+  color: white;
+}
+
+.dark .table tbody tr:hover {
+  background: linear-gradient(135deg, rgba(37, 211, 102, 0.1) 0%, rgba(18, 140, 126, 0.1) 100%);
+}
+
 /* Títulos */
 .page-title {
   background: linear-gradient(135deg, var(--whatsapp-green) 0%, var(--whatsapp-green-dark) 100%);
