@@ -42,11 +42,15 @@ export async function PUT(request: NextRequest) {
       }, { status: 404 });
     }
 
+    // Normalizar o número de telefone para comparação
+    const normalizedNewPhone = phoneNumber.trim().replace(/\D/g, "");
+    const normalizedExistingPhone = existingContact.phoneNumber.replace(/\D/g, "");
+
     // Verificar se o novo número já existe para outro contato no mesmo evento
-    if (phoneNumber !== existingContact.phoneNumber) {
+    if (normalizedNewPhone !== normalizedExistingPhone) {
       const duplicateContact = await prisma.guest.findFirst({
         where: {
-          phoneNumber: phoneNumber,
+          phoneNumber: normalizedNewPhone,
           eventId: existingContact.eventId,
           id: { not: contactId },
         },
@@ -64,7 +68,7 @@ export async function PUT(request: NextRequest) {
       where: { id: contactId },
       data: {
         name: name.trim(),
-        phoneNumber: phoneNumber.trim().replace(/\D/g, ""), // Remove caracteres não numéricos
+        phoneNumber: normalizedNewPhone, // Usar o número já normalizado
       },
       include: {
         event: {
