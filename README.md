@@ -76,3 +76,5 @@ O projeto está configurado para deploy na Vercel. Você precisará:
 ## Licença
 
 MIT
+
+<!-- Deploy trigger -->
