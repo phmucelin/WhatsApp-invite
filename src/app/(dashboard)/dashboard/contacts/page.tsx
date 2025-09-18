@@ -15,6 +15,7 @@ import { formatPhoneNumber } from "@/lib/utils";
 import { Guest } from "@/types/prisma";
 import { ClearContacts } from "@/components/dashboard/clear-contacts";
 import { Filters } from "@/components/dashboard/filters";
+import { EditContact } from "@/components/forms/edit-contact";
 
 interface FiltersType {
   name: string;
@@ -194,14 +195,15 @@ export default function ContactsPage() {
             </div>
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Número</TableHead>
-                  <TableHead>Status do Envio</TableHead>
-                  <TableHead>Status da Confirmação</TableHead>
-                </TableRow>
-              </TableHeader>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Número</TableHead>
+                      <TableHead>Status do Envio</TableHead>
+                      <TableHead>Status da Confirmação</TableHead>
+                      <TableHead>Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
               <TableBody>
                 {filteredContacts.map((contact: Guest) => (
                   <TableRow key={contact.id}>
@@ -236,6 +238,12 @@ export default function ContactsPage() {
                             ? "Declinado"
                             : "Aguardando"}
                       </span>
+                    </TableCell>
+                    <TableCell>
+                      <EditContact 
+                        contact={contact} 
+                        onContactUpdated={loadContacts}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

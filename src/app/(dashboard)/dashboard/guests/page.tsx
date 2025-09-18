@@ -15,17 +15,12 @@ import {
 } from "@/components/ui/table";
 import { Search, Users, Phone, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import { EditContact } from "@/components/forms/edit-contact";
+import { Guest as PrismaGuest } from "@/types/prisma";
 
-interface Guest {
-  id: string;
-  name: string;
-  phoneNumber: string;
+interface Guest extends PrismaGuest {
   eventTitle: string;
   eventDate: string;
-  rsvpStatus: string;
-  sendStatus: string;
-  resendCount?: number;
-  lastSentAt?: string;
 }
 
 interface Event {
@@ -273,6 +268,7 @@ export default function GuestsPage() {
                     <TableHead>Status Envio</TableHead>
                     <TableHead>Reenvios</TableHead>
                     <TableHead>Último Envio</TableHead>
+                    <TableHead>Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -322,6 +318,12 @@ export default function GuestsPage() {
                         ) : (
                           <span className="text-gray-400">-</span>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <EditContact 
+                          contact={guest} 
+                          onContactUpdated={loadGuests}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}
