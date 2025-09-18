@@ -106,39 +106,53 @@ export function ContactUpload() {
   }
 
   return (
-    <div className="flex items-center gap-4">
-      <Select
-        value={selectedEvent}
-        onValueChange={setSelectedEvent}
-        disabled={isLoading}
-      >
-        <SelectTrigger className="w-[200px]">
-          <SelectValue placeholder="Selecione o evento" />
-        </SelectTrigger>
-        <SelectContent>
-          {events.map((event) => (
-            <SelectItem key={event.id} value={event.id}>
-              {event.title}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <div className="flex-1">
-        <Input
-          type="file"
-          accept=".csv"
-          onChange={onFileChange}
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+      <div className="flex flex-col gap-2 w-full sm:w-auto">
+        <label className="text-sm font-medium text-gray-700">Selecionar Evento</label>
+        <Select
+          value={selectedEvent}
+          onValueChange={setSelectedEvent}
           disabled={isLoading}
-          className="max-w-xs"
-        />
-        <p className="mt-1 text-xs text-muted-foreground">
-          O arquivo CSV deve ter as colunas: NOME, NUMERO
+        >
+          <SelectTrigger className="w-full sm:w-[250px] input">
+            <SelectValue placeholder="Selecione o evento" />
+          </SelectTrigger>
+          <SelectContent className="bg-white border border-gray-200 shadow-lg">
+            {events.map((event) => (
+              <SelectItem key={event.id} value={event.id} className="hover:bg-gray-50">
+                {event.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div className="flex flex-col gap-2 flex-1 w-full">
+        <label className="text-sm font-medium text-gray-700">Arquivo CSV</label>
+        <div className="flex items-center gap-3">
+          <Input
+            type="file"
+            accept=".csv"
+            onChange={onFileChange}
+            disabled={isLoading}
+            className="input flex-1"
+          />
+          <Button 
+            disabled={isLoading || !selectedEvent} 
+            className="btn btn-primary"
+            onClick={() => {
+              const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+              fileInput?.click();
+            }}
+          >
+            <Upload className="h-4 w-4" />
+            {isLoading ? "Importando..." : "Importar"}
+          </Button>
+        </div>
+        <p className="text-xs text-gray-500">
+          O arquivo CSV deve ter as colunas: <strong>NOME, NUMERO</strong>
         </p>
       </div>
-      <Button disabled={isLoading} variant="ghost">
-        <Upload className="h-4 w-4" />
-        <span className="sr-only">Upload CSV</span>
-      </Button>
     </div>
   );
 }

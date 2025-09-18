@@ -145,7 +145,7 @@ export async function POST(request: Request) {
       whatsappUrl
     });
 
-    // Atualizar o status do envio
+    // Atualizar o status do envio IMEDIATAMENTE quando o usuário clica em "Enviar"
     console.log("[MESSAGES_SEND] Atualizando status do guest...");
     try {
       const updateData: {
@@ -165,7 +165,7 @@ export async function POST(request: Request) {
         where: { id: guest.id },
         data: updateData,
       });
-      console.log("[MESSAGES_SEND] Status atualizado com sucesso");
+      console.log("[MESSAGES_SEND] Status atualizado para SENT com sucesso");
     } catch (error) {
       console.error("[MESSAGES_SEND] Erro ao atualizar status:", error);
       // Não falha a operação por causa disso, apenas loga o erro
