@@ -49,59 +49,77 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Eventos</h2>
-        <div className="flex items-center gap-4">
-          <Button asChild>
-            <Link href="/dashboard/events/new">
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Evento
-            </Link>
-          </Button>
-          <ClearEvents onClear={fetchEvents} />
-          <ClearContacts onClear={fetchEvents} />
-        </div>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Total de Eventos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{totalEvents}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Convites Enviados</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{totalInvites}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Confirmações</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{totalConfirmed}</p>
-          </CardContent>
-        </Card>
-      </div>
-      <Card>
+    <div className="main-container">
+      <div className="container mx-auto p-4">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="page-title text-4xl font-bold">Eventos</h2>
+            <div className="flex items-center gap-4">
+              <Button asChild className="btn btn-primary">
+                <Link href="/dashboard/events/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Novo Evento
+                </Link>
+              </Button>
+              <ClearEvents onClear={fetchEvents} />
+              <ClearContacts onClear={fetchEvents} />
+            </div>
+          </div>
+          
+          {/* Estatísticas */}
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="stats-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total de Eventos</p>
+                  <p className="stats-number">{totalEvents}</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">📅</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="stats-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Convites Enviados</p>
+                  <p className="stats-number text-blue-600">{totalInvites}</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">📤</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="stats-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Confirmações</p>
+                  <p className="stats-number text-green-600">{totalConfirmed}</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">✅</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Lista de Eventos */}
+          <Card>
         <CardHeader>
           <CardTitle>Eventos Recentes</CardTitle>
         </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="py-6 text-center text-sm text-muted-foreground">
-              Carregando eventos...
-            </div>
-          ) : events.length === 0 ? (
-            <div className="py-6 text-center text-sm text-muted-foreground">
-              Nenhum evento criado ainda.
-            </div>
+            <CardContent>
+              {isLoading ? (
+                <div className="py-8 text-center">
+                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+                  <p className="mt-2 text-gray-600">Carregando eventos...</p>
+                </div>
+              ) : events.length === 0 ? (
+                <div className="py-8 text-center text-gray-500">
+                  Nenhum evento criado ainda.
+                </div>
           ) : (
             <div className="space-y-4">
               {events.map((event) => (
@@ -175,10 +193,12 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

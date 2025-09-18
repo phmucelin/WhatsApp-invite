@@ -40,41 +40,53 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-center text-2xl">
+    <div className="flex min-h-screen items-center justify-center p-4" style={{background: 'var(--whatsapp-chat-bg)'}}>
+      <Card className="w-full max-w-md shadow-2xl">
+        <CardHeader className="text-center pb-8">
+          <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+            <span className="text-2xl">📱</span>
+          </div>
+          <CardTitle className="text-3xl font-bold" style={{color: 'var(--whatsapp-green-darker)'}}>
             Chai School Convites
           </CardTitle>
+          <p className="text-gray-600 mt-2">Faça login para acessar sua conta</p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
                 required
                 disabled={isLoading}
+                className="input"
+                placeholder="seu@email.com"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="password" className="text-sm font-medium text-gray-700">Senha</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
                 required
                 disabled={isLoading}
+                className="input"
+                placeholder="Sua senha"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button 
+              type="submit" 
+              className="w-full btn btn-primary text-lg py-3" 
+              disabled={isLoading}
+            >
               {isLoading ? "Entrando..." : "Entrar"}
             </Button>
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-sm text-gray-600">
               Não tem uma conta?{" "}
-              <Link href="/" className="text-primary hover:underline">
+              <Link href="/" className="font-medium" style={{color: 'var(--whatsapp-green)'}}>
                 Criar conta
               </Link>
             </div>

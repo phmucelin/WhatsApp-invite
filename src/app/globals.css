@@ -12,22 +12,30 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--whatsapp-chat-bg);
   min-height: 100vh;
 }
 
-/* Tema WhatsApp */
+/* Tema WhatsApp Autêntico */
 :root {
   --whatsapp-green: #25d366;
   --whatsapp-green-dark: #128c7e;
   --whatsapp-green-light: #dcf8c6;
+  --whatsapp-green-darker: #075e54;
   --whatsapp-blue: #34b7f1;
+  --whatsapp-blue-dark: #0084ff;
   --whatsapp-gray: #f0f0f0;
+  --whatsapp-gray-dark: #e5ddd5;
+  --whatsapp-gray-light: #f7f7f7;
   --whatsapp-dark: #2c3e50;
   --whatsapp-light: #ffffff;
   --whatsapp-accent: #ff6b6b;
   --whatsapp-purple: #9b59b6;
   --whatsapp-orange: #f39c12;
+  --whatsapp-yellow: #ffeb3b;
+  --whatsapp-red: #f44336;
+  --whatsapp-chat-bg: #e5ddd5;
+  --whatsapp-header-bg: #075e54;
 }
 
 /* Estilos personalizados para componentes */
@@ -410,7 +418,7 @@ body {
 
 /* Container principal */
 .main-container {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--whatsapp-chat-bg);
   min-height: 100vh;
   padding: 2rem;
 }
