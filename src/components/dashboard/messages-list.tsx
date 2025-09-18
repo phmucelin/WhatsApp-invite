@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Send } from "lucide-react";
+import { Send, RotateCcw } from "lucide-react";
 import { formatPhoneNumber } from "@/lib/utils";
 import { GuestWithEvent, SendStatus } from "@/types/prisma";
 import { toast } from "sonner";
@@ -127,17 +127,17 @@ export function MessagesList() {
   const pendingMessages =
     stats.find((s: StatsRecord) => s.sendStatus === "PENDING")?._count ?? 0;
 
-  async function handleSendMessage(guestId: string) {
+  async function handleSendMessage(guestId: string, isResend: boolean = false) {
     try {
       setIsLoading(guestId);
-      console.log("[SEND_MESSAGE] Iniciando envio para:", guestId);
+      console.log("[SEND_MESSAGE] Iniciando envio para:", guestId, "Resend:", isResend);
 
       const response = await fetch("/api/messages/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ guestId }),
+        body: JSON.stringify({ guestId, isResend }),
       });
 
       if (!response.ok) {
@@ -158,7 +158,7 @@ export function MessagesList() {
 
       // Atualizar os dados
       await loadData();
-      toast.success("Mensagem preparada para envio!");
+      toast.success(isResend ? "Reenvio preparado com sucesso!" : "Mensagem preparada para envio!");
     } catch (error) {
       console.error("[SEND_MESSAGE]", error);
       toast.error(
@@ -176,33 +176,40 @@ export function MessagesList() {
       </div>
 
       {/* Estatísticas */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Total de Mensagens</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{totalMessages}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Mensagens Enviadas</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-green-600">{sentMessages}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Mensagens Pendentes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-yellow-600">
-              {pendingMessages}
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="stats-card">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total de Mensagens</p>
+              <p className="stats-number">{totalMessages}</p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <span className="text-white font-bold text-lg">📊</span>
+            </div>
+          </div>
+        </div>
+        <div className="stats-card">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Mensagens Enviadas</p>
+              <p className="stats-number text-green-600">{sentMessages}</p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+              <span className="text-white font-bold text-lg">✅</span>
+            </div>
+          </div>
+        </div>
+        <div className="stats-card">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Mensagens Pendentes</p>
+              <p className="stats-number text-orange-600">{pendingMessages}</p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+              <span className="text-white font-bold text-lg">⏳</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Filtros */}
@@ -236,6 +243,8 @@ export function MessagesList() {
                   <TableHead>Evento</TableHead>
                   <TableHead>Status do Envio</TableHead>
                   <TableHead>Status da Confirmação</TableHead>
+                  <TableHead>Reenvios</TableHead>
+                  <TableHead>Último Envio</TableHead>
                   <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -266,10 +275,10 @@ export function MessagesList() {
                     </TableCell>
                     <TableCell>
                       <span
-                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                        className={`status-badge ${
                           message.sendStatus === "SENT"
-                            ? "bg-green-100 text-green-600"
-                            : "bg-yellow-100 text-yellow-600"
+                            ? "status-sent"
+                            : "status-pending"
                         }`}
                       >
                         {message.sendStatus === "SENT" ? "Enviado" : "Pendente"}
@@ -277,12 +286,12 @@ export function MessagesList() {
                     </TableCell>
                     <TableCell>
                       <span
-                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                        className={`status-badge ${
                           message.rsvpStatus === "CONFIRMED"
-                            ? "bg-green-100 text-green-600"
+                            ? "status-confirmed"
                             : message.rsvpStatus === "DECLINED"
-                              ? "bg-red-100 text-red-600"
-                              : "bg-yellow-100 text-yellow-600"
+                              ? "status-declined"
+                              : "status-waiting"
                         }`}
                       >
                         {message.rsvpStatus === "CONFIRMED"
@@ -293,18 +302,50 @@ export function MessagesList() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Button
-                        size="sm"
-                        onClick={() => handleSendMessage(message.id)}
-                        disabled={
-                          isLoading === message.id ||
-                          message.sendStatus === "SENT"
-                        }
-                        className="flex items-center gap-2"
-                      >
-                        <Send className="h-4 w-4" />
-                        {isLoading === message.id ? "Enviando..." : "Enviar"}
-                      </Button>
+                      <div className="flex items-center justify-center">
+                        <span className="text-lg font-bold text-orange-600">
+                          {message.resendCount || 0}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {message.lastSentAt ? (
+                        <div className="text-sm text-gray-600">
+                          {new Date(message.lastSentAt).toLocaleDateString('pt-BR')}
+                          <br />
+                          {new Date(message.lastSentAt).toLocaleTimeString('pt-BR', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => handleSendMessage(message.id, false)}
+                          disabled={isLoading === message.id}
+                          className="btn btn-primary flex items-center gap-2"
+                        >
+                          <Send className="h-4 w-4" />
+                          {isLoading === message.id ? "Enviando..." : "Enviar"}
+                        </Button>
+                        
+                        {message.sendStatus === "SENT" && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleSendMessage(message.id, true)}
+                            disabled={isLoading === message.id}
+                            className="btn btn-resend flex items-center gap-2"
+                          >
+                            <RotateCcw className="h-4 w-4" />
+                            {isLoading === message.id ? "Reenviando..." : "Reenviar"}
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

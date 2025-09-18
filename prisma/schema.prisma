@@ -47,6 +47,8 @@ model Guest {
   eventId       String
   sendStatus    SendStatus @default(PENDING)
   rsvpStatus    RsvpStatus @default(WAITING)
+  resendCount   Int       @default(0)
+  lastSentAt    DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

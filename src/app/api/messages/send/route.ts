@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     console.log("[MESSAGES_SEND] Body recebido:", body);
     
-    const { guestId } = body;
+    const { guestId, isResend = false } = body;
 
     if (!guestId) {
       console.log("[MESSAGES_SEND] Guest ID não fornecido");
@@ -146,11 +146,20 @@ export async function POST(request: Request) {
     });
 
     // Atualizar o status do envio
-    console.log("[MESSAGES_SEND] Atualizando status do guest para SENT...");
+    console.log("[MESSAGES_SEND] Atualizando status do guest...");
     try {
+      const updateData: any = {
+        sendStatus: "SENT",
+        lastSentAt: new Date(),
+      };
+
+      if (isResend) {
+        updateData.resendCount = { increment: 1 };
+      }
+
       await prisma.guest.update({
         where: { id: guest.id },
-        data: { sendStatus: "SENT" },
+        data: updateData,
       });
       console.log("[MESSAGES_SEND] Status atualizado com sucesso");
     } catch (error) {

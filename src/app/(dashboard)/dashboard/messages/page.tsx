@@ -109,8 +109,9 @@ Teste de emojis para WhatsApp
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Enviar Mensagem</h1>
+    <div className="main-container">
+      <div className="container mx-auto p-4">
+        <h1 className="page-title text-4xl font-bold mb-8">Enviar Mensagem</h1>
 
       <Card className="mb-4">
         <CardHeader>
@@ -139,7 +140,7 @@ Teste de emojis para WhatsApp
               />
             </div>
             <div className="flex items-center gap-4">
-              <Button onClick={handleSendMessage} disabled={isLoading}>
+              <Button onClick={handleSendMessage} disabled={isLoading} className="btn btn-primary">
                 <Send className="mr-2 h-4 w-4" />
                 {isLoading ? "Enviando..." : "Enviar Mensagem"}
               </Button>
@@ -147,7 +148,7 @@ Teste de emojis para WhatsApp
               <Button 
                 variant="outline" 
                 onClick={handleTestEmojis}
-                className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                className="btn btn-outline border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white"
               >
                 <TestTube className="mr-2 h-4 w-4" />
                 Testar Emojis
@@ -157,7 +158,8 @@ Teste de emojis para WhatsApp
         </CardContent>
       </Card>
 
-      <MessagesList />
+        <MessagesList />
+      </div>
     </div>
   );
 }
