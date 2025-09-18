@@ -37,7 +37,7 @@ export default function ContactsPage() {
   const loadContacts = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/rsvp/list");
+      const response = await fetch("/api/contacts");
       if (response.ok) {
         const data = await response.json();
         setContacts(data.guests);

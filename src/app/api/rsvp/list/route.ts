@@ -81,6 +81,9 @@ export async function GET(request: Request) {
         eventId: string;
         event: { id: string; title: string; date: Date };
         rsvpStatus: string;
+        sendStatus: string;
+        resendCount: number;
+        lastSentAt: Date | null;
         createdAt: Date;
       }) => ({
         id: guest.id,
@@ -90,6 +93,9 @@ export async function GET(request: Request) {
         eventTitle: guest.event.title,
         eventDate: guest.event.date,
         rsvpStatus: guest.rsvpStatus,
+        sendStatus: guest.sendStatus,
+        resendCount: guest.resendCount,
+        lastSentAt: guest.lastSentAt,
         createdAt: guest.createdAt,
       })
     );
