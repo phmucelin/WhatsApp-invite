@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,12 +83,6 @@ export default function LoginPage() {
             >
               {isLoading ? "Entrando..." : "Entrar"}
             </Button>
-            <div className="text-center text-sm text-gray-600">
-              Não tem uma conta?{" "}
-              <Link href="/" className="font-medium" style={{color: 'var(--whatsapp-green)'}}>
-                Criar conta
-              </Link>
-            </div>
           </form>
         </CardContent>
       </Card>
