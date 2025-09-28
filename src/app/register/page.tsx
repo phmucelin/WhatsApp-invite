@@ -1,16 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,18 +18,25 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const response = await signIn("credentials", {
-        email: formData.get("email"),
-        password: formData.get("password"),
-        redirect: false,
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          email: formData.get("email"),
+          password: formData.get("password"),
+        }),
       });
 
-      if (response?.error) {
-        throw new Error("Email ou senha inválidos");
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
       }
 
-      router.push("/dashboard");
-      router.refresh();
+      toast.success("Conta criada com sucesso!");
+      router.push("/login");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Algo deu errado");
     } finally {
@@ -44,15 +49,27 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center pb-8">
           <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
-            <span className="text-2xl">📱</span>
+            <span className="text-2xl">👤</span>
           </div>
           <CardTitle className="text-3xl font-bold" style={{color: 'var(--whatsapp-green-darker)'}}>
-            Chai School Convites
+            Criar Conta
           </CardTitle>
-          <p className="text-gray-600 mt-2">Faça login para acessar sua conta</p>
+          <p className="text-gray-600 mt-2">Crie sua conta de administrador</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium text-gray-700">Nome</Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                required
+                disabled={isLoading}
+                className="input"
+                placeholder="Seu nome completo"
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
               <Input
@@ -82,13 +99,13 @@ export default function LoginPage() {
               className="w-full btn btn-primary text-lg py-3" 
               disabled={isLoading}
             >
-              {isLoading ? "Entrando..." : "Entrar"}
+              {isLoading ? "Criando..." : "Criar Conta"}
             </Button>
             <div className="text-center text-sm text-gray-600">
-              Não tem uma conta?{" "}
-              <Link href="/register" className="font-medium" style={{color: 'var(--whatsapp-green)'}}>
-                Criar conta
-              </Link>
+              Já tem uma conta?{" "}
+              <a href="/login" className="font-medium" style={{color: 'var(--whatsapp-green)'}}>
+                Fazer login
+              </a>
             </div>
           </form>
         </CardContent>
