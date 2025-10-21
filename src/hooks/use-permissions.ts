@@ -18,13 +18,15 @@ export function usePermissions() {
 
     if (authToken) {
       try {
-        const tokenData = JSON.parse(Buffer.from(authToken, 'base64').toString());
+        // Decodificar base64 sem usar Buffer (que não existe no cliente)
+        const tokenData = JSON.parse(atob(authToken));
         setPermissions({
           isAdmin: tokenData.role === 'ADMIN',
           isUser: true,
           isLoading: false,
         });
       } catch (error) {
+        console.error("Erro ao decodificar token:", error);
         setPermissions({
           isAdmin: false,
           isUser: false,
