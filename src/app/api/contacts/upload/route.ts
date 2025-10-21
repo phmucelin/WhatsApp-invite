@@ -68,12 +68,24 @@ export async function POST(request: Request) {
 
     // Processar cabeçalho
     const header = lines[0].split(',').map(h => h.trim().toLowerCase());
-    const nameIndex = header.findIndex(h => h.includes('nome') || h.includes('name'));
-    const phoneIndex = header.findIndex(h => h.includes('telefone') || h.includes('phone') || h.includes('celular'));
+    console.log("[CSV_UPLOAD] Cabeçalho encontrado:", header);
+    
+    const nameIndex = header.findIndex(h => 
+      h.includes('nome') || h.includes('name') || h === 'nome' || h === 'name'
+    );
+    const phoneIndex = header.findIndex(h => 
+      h.includes('telefone') || h.includes('phone') || h.includes('celular') || 
+      h.includes('numero') || h.includes('number') || h === 'telefone' || h === 'phone'
+    );
+
+    console.log("[CSV_UPLOAD] Índices encontrados:", { nameIndex, phoneIndex });
 
     if (nameIndex === -1 || phoneIndex === -1) {
       return NextResponse.json(
-        { error: "CSV deve ter colunas 'nome' e 'telefone'" },
+        { 
+          error: "CSV deve ter colunas 'nome' e 'telefone'. Colunas encontradas: " + header.join(', '),
+          header: header
+        },
         { status: 400 }
       );
     }
