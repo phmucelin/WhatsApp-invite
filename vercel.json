@@ -1,4 +1,10 @@
 {
   "buildCommand": "prisma generate && next build",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "env": {
+    "NEXTAUTH_URL": "https://chaischool-convites.vercel.app",
+    "NEXTAUTH_SECRET": "Zx1ZytE2hGF955FyPRPvX0MfKcDQe1B/c9OchftxZxU="
+  }
 }
