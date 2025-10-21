@@ -56,6 +56,8 @@ export function DashboardSidebar() {
   const pathname = usePathname();
   const { canAccessAdmin, canAccessEvents, isLoading } = usePermissions();
 
+  console.log("[Sidebar] Permissions:", { canAccessAdmin, canAccessEvents, isLoading });
+
   const filteredNavigation = navigation.filter((item) => {
     if (item.permission === "canAccessAdmin") {
       return canAccessAdmin;
@@ -65,6 +67,8 @@ export function DashboardSidebar() {
     }
     return true;
   });
+
+  console.log("[Sidebar] Navigation filtrada:", filteredNavigation.length, "itens");
 
   return (
     <div className="flex h-full w-64 flex-col bg-gray-900">

@@ -27,13 +27,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Verificar se há usuário salvo no localStorage
     const savedUser = localStorage.getItem('user');
+    console.log("[AuthProvider] Usuário salvo:", savedUser);
+    
     if (savedUser) {
       try {
-        setUser(JSON.parse(savedUser));
+        const userData = JSON.parse(savedUser);
+        console.log("[AuthProvider] Usuário carregado:", userData);
+        setUser(userData);
       } catch (error) {
         console.error("Erro ao carregar usuário:", error);
         localStorage.removeItem('user');
       }
+    } else {
+      console.log("[AuthProvider] Nenhum usuário salvo encontrado");
     }
     setIsLoading(false);
   }, []);
