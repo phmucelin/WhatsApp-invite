@@ -58,7 +58,7 @@ export async function GET() {
   }
 }
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     // Verificar autenticação
     const cookieStore = cookies();
