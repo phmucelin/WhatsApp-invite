@@ -23,28 +23,28 @@ export default function LoginPage() {
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
       
-      console.log("=== SIMPLE LOGIN ===");
+      console.log("=== LOGIN ===");
       console.log("Email:", email);
       
-      // Usar API simples
-      const response = await fetch("/api/simple-login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+      // Usar NextAuth
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
 
-      const data = await response.json();
-      console.log("Resposta:", data);
+      console.log("Resultado do login:", result);
 
-      if (!response.ok) {
-        toast.error(data.error || "Erro ao fazer login");
+      if (result?.error) {
+        toast.error("Credenciais inválidas");
         return;
       }
 
-      console.log("Login bem-sucedido! Redirecionando...");
-      window.location.href = "/dashboard";
+      if (result?.ok) {
+        console.log("Login bem-sucedido! Redirecionando...");
+        // Usar window.location para garantir redirecionamento em produção
+        window.location.href = "/dashboard";
+      }
       
     } catch (error) {
       console.error("Erro no login:", error);

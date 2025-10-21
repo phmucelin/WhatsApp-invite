@@ -3,10 +3,22 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request });
+  const token = await getToken({ 
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET
+  });
+
+  // Permitir acesso às rotas de API e assets
+  if (request.nextUrl.pathname.startsWith('/api/') || 
+      request.nextUrl.pathname.startsWith('/_next/') ||
+      request.nextUrl.pathname.startsWith('/favicon') ||
+      request.nextUrl.pathname.includes('.')) {
+    return NextResponse.next();
+  }
 
   if (!token) {
-    if (request.nextUrl.pathname.startsWith("/dashboard")) {
+    if (request.nextUrl.pathname.startsWith("/dashboard") || 
+        request.nextUrl.pathname.startsWith("/admin")) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }

@@ -12,6 +12,8 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development",
+  useSecureCookies: process.env.NODE_ENV === "production",
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -68,6 +70,13 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as any).role;
       }
       return token;
+    },
+    async redirect({ url, baseUrl }) {
+      // Permite redirecionamentos relativos
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Permite redirecionamentos para o mesmo domínio
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
   },
 };
