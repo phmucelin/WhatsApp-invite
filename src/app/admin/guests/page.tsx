@@ -49,11 +49,18 @@ export default function AdminGuestsPage() {
       const response = await fetch(`/api/rsvp/list?${params.toString()}`);
       if (response.ok) {
         const data = await response.json();
-        setGuests(data.guests);
-        setTotalGuests(data.total);
+        const guestsList = data.guests || [];
+        setGuests(guestsList);
+        setTotalGuests(data.total || 0);
+      } else {
+        console.error("Erro na resposta da API:", response.status);
+        setGuests([]);
+        setTotalGuests(0);
       }
     } catch (error) {
       console.error("Erro ao carregar convidados:", error);
+      setGuests([]);
+      setTotalGuests(0);
     } finally {
       setIsLoading(false);
     }
@@ -254,29 +261,29 @@ export default function AdminGuestsPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {guests
-                    .filter(
+                    ?.filter(
                       (guest) =>
                         statusFilter === "all" ||
-                        guest.rsvpStatus === statusFilter
+                        guest?.rsvpStatus === statusFilter
                     )
-                    .map((guest) => (
-                      <tr key={guest.id} className="hover:bg-gray-50">
+                    ?.map((guest) => (
+                      <tr key={guest?.id} className="hover:bg-gray-50">
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="text-sm font-medium text-gray-900">
-                            {guest.name}
+                            {guest?.name || "N/A"}
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="text-sm text-gray-900">
-                            {guest.phoneNumber}
+                            {guest?.phoneNumber || "N/A"}
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="text-sm text-gray-900">
-                            {guest.eventTitle}
+                            {guest?.eventTitle || "N/A"}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {(() => {
+                            {guest?.eventDate ? (() => {
                               const eventDate = new Date(guest.eventDate);
                               const day = eventDate.getUTCDate().toString().padStart(2, '0');
                               const month = (eventDate.getUTCMonth() + 1).toString().padStart(2, '0');
@@ -284,28 +291,28 @@ export default function AdminGuestsPage() {
                               const hours = eventDate.getUTCHours().toString().padStart(2, '0');
                               const minutes = eventDate.getUTCMinutes().toString().padStart(2, '0');
                               return `${day}/${month}/${year} às ${hours}:${minutes}`;
-                            })()}
+                            })() : "N/A"}
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           <span
-                            className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(guest.rsvpStatus)}`}
+                            className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(guest?.rsvpStatus)}`}
                           >
-                            {getStatusText(guest.rsvpStatus)}
+                            {getStatusText(guest?.rsvpStatus)}
                           </span>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                          {(() => {
+                          {guest?.createdAt ? (() => {
                             const createdAt = new Date(guest.createdAt);
                             const day = createdAt.getUTCDate().toString().padStart(2, '0');
                             const month = (createdAt.getUTCMonth() + 1).toString().padStart(2, '0');
                             const year = createdAt.getUTCFullYear();
                             return `${day}/${month}/${year}`;
-                          })()}
+                          })() : "N/A"}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                           <a
-                            href={`/rsvp/${guest.id}`}
+                            href={`/rsvp/${guest?.id}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:text-blue-900"

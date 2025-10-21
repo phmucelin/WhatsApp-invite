@@ -57,12 +57,22 @@ export function MessagesList() {
     try {
       setIsLoadingData(true);
       const [messages, stats] = await Promise.all([getMessages(), getStats()]);
-      setMessages(messages);
-      setFilteredMessages(messages);
-      setStats(stats);
+      
+      // Garantir que messages seja um array
+      const messagesList = Array.isArray(messages) ? messages : [];
+      
+      // Garantir que stats seja um array
+      const statsList = Array.isArray(stats) ? stats : [];
+      
+      setMessages(messagesList);
+      setFilteredMessages(messagesList);
+      setStats(statsList);
     } catch (error) {
       console.error("[LOAD_DATA]", error);
       toast.error("Erro ao carregar dados");
+      setMessages([]);
+      setFilteredMessages([]);
+      setStats([]);
     } finally {
       setIsLoadingData(false);
     }
@@ -118,14 +128,14 @@ export function MessagesList() {
     [messages]
   );
 
-  const totalMessages = stats.reduce(
+  const totalMessages = Array.isArray(stats) ? stats.reduce(
     (acc: number, curr: StatsRecord) => acc + curr._count,
     0
-  );
-  const sentMessages =
-    stats.find((s: StatsRecord) => s.sendStatus === "SENT")?._count ?? 0;
-  const pendingMessages =
-    stats.find((s: StatsRecord) => s.sendStatus === "PENDING")?._count ?? 0;
+  ) : 0;
+  const sentMessages = Array.isArray(stats) ? 
+    stats.find((s: StatsRecord) => s.sendStatus === "SENT")?._count ?? 0 : 0;
+  const pendingMessages = Array.isArray(stats) ? 
+    stats.find((s: StatsRecord) => s.sendStatus === "PENDING")?._count ?? 0 : 0;
 
   async function handleSendMessage(guestId: string, isResend: boolean = false) {
     try {
@@ -146,6 +156,12 @@ export function MessagesList() {
       }
 
       const data = await response.json();
+      console.log("[SEND_MESSAGE] Resposta completa:", data);
+
+      if (!data.whatsappUrl) {
+        throw new Error("URL do WhatsApp não foi gerada");
+      }
+
       console.log("[SEND_MESSAGE] URL gerada:", data.whatsappUrl);
 
       // Abrir o WhatsApp Web em uma nova aba

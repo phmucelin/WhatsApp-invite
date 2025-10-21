@@ -37,12 +37,16 @@ export async function GET() {
           userId: userData.id,
         },
       },
-      _count: {
-        sendStatus: true,
-      },
+      _count: true,
     });
 
-    return NextResponse.json(stats);
+    // Formatar resposta para o formato esperado
+    const formattedStats = stats.map(stat => ({
+      sendStatus: stat.sendStatus,
+      _count: stat._count
+    }));
+
+    return NextResponse.json(formattedStats);
   } catch (error) {
     console.error("[MESSAGES_STATS_GET]", error);
     return new NextResponse("Internal error", { status: 500 });
