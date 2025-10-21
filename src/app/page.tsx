@@ -7,8 +7,8 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Por enquanto, redirecionar para dashboard sem autenticação
-    router.replace("/dashboard");
+    // Redirecionar para login
+    router.replace("/login");
   }, [router]);
 
   return (
