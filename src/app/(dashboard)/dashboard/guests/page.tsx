@@ -78,10 +78,12 @@ export default function GuestsPage() {
         const response = await fetch("/api/events/list");
         if (response.ok) {
           const data = await response.json();
-          setEvents(data.events);
+          // A API retorna um array diretamente, não um objeto com propriedade events
+          setEvents(data || []);
         }
       } catch (error) {
         console.error("Erro ao carregar eventos:", error);
+        setEvents([]); // Definir array vazio em caso de erro
       }
     }
     loadEventsForFilter();
@@ -214,7 +216,7 @@ export default function GuestsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todos os eventos</SelectItem>
-                    {events.map((event) => (
+                    {events?.map((event) => (
                       <SelectItem key={event.id} value={event.id}>
                         {event.title}
                       </SelectItem>

@@ -18,7 +18,9 @@ interface Event {
   title: string;
   date: Date;
   location: string;
-  guestCount: number;
+  _count?: {
+    guests: number;
+  };
 }
 
 export default function AdminGuestsPage() {
@@ -68,10 +70,12 @@ export default function AdminGuestsPage() {
         const response = await fetch("/api/events/list");
         if (response.ok) {
           const data = await response.json();
-          setEvents(data.events);
+          // A API retorna um array diretamente, não um objeto com propriedade events
+          setEvents(data || []);
         }
       } catch (error) {
         console.error("Erro ao carregar eventos:", error);
+        setEvents([]); // Definir array vazio em caso de erro
       }
     }
     loadEventsForFilter();
@@ -157,9 +161,9 @@ export default function AdminGuestsPage() {
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">Todos os eventos</option>
-                {events.map((event) => (
+                {events?.map((event) => (
                   <option key={event.id} value={event.id}>
-                    {event.title} ({event.guestCount} convidados)
+                    {event.title} ({event._count?.guests || 0} convidados)
                   </option>
                 ))}
               </select>

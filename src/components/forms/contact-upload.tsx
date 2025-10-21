@@ -28,16 +28,18 @@ export function ContactUpload() {
   useEffect(() => {
     async function loadEvents() {
       try {
-        const response = await fetch("/api/events");
+        const response = await fetch("/api/events/list");
         if (!response.ok) {
           const error = await response.text();
           throw new Error(error);
         }
         const data = await response.json();
-        setEvents(data);
+        // A API retorna um array diretamente
+        setEvents(data || []);
       } catch (error) {
         console.error("[EVENTS_LOAD]", error);
         toast.error("Erro ao carregar eventos. Crie um evento primeiro.");
+        setEvents([]); // Definir array vazio em caso de erro
       }
     }
 
@@ -118,7 +120,7 @@ export function ContactUpload() {
             <SelectValue placeholder="Selecione o evento" />
           </SelectTrigger>
           <SelectContent className="bg-white border border-gray-200 shadow-lg">
-            {events.map((event) => (
+            {events?.map((event) => (
               <SelectItem key={event.id} value={event.id} className="hover:bg-gray-50">
                 {event.title}
               </SelectItem>
