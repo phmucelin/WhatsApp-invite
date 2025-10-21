@@ -20,19 +20,26 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget);
+      console.log("Tentando fazer login com:", formData.get("email"));
+      
       const response = await signIn("credentials", {
         email: formData.get("email"),
         password: formData.get("password"),
         redirect: false,
       });
 
+      console.log("Resposta do signIn:", response);
+
       if (response?.error) {
+        console.error("Erro no login:", response.error);
         throw new Error("Email ou senha inválidos");
       }
 
+      console.log("Login bem-sucedido, redirecionando...");
       router.push("/dashboard");
       router.refresh();
     } catch (error) {
+      console.error("Erro no login:", error);
       toast.error(error instanceof Error ? error.message : "Algo deu errado");
     } finally {
       setIsLoading(false);
