@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SonnerProvider } from "@/components/providers/sonner-provider";
+import { AuthProvider } from "@/components/providers/auth-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,8 +38,10 @@ export default function RootLayout({
       <body
         className={`${inter.className} min-h-full bg-background text-foreground antialiased`}
       >
-        {children}
-        <SonnerProvider />
+        <AuthProvider>
+          {children}
+          <SonnerProvider />
+        </AuthProvider>
       </body>
     </html>
   );

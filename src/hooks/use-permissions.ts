@@ -1,64 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export function usePermissions() {
-  const [permissions, setPermissions] = useState({
-    isAdmin: false,
-    isUser: false,
-    isLoading: true,
-  });
-
-  useEffect(() => {
-    const checkAuth = () => {
-      // Verificar se há token de autenticação
-      const authToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('auth-token='))
-        ?.split('=')[1];
-
-      console.log("[usePermissions] Token encontrado:", !!authToken);
-      
-      if (authToken) {
-        try {
-          // Decodificar base64 sem usar Buffer (que não existe no cliente)
-          const tokenData = JSON.parse(atob(authToken));
-          console.log("[usePermissions] Token decodificado:", tokenData);
-          setPermissions({
-            isAdmin: tokenData.role === 'ADMIN',
-            isUser: true,
-            isLoading: false,
-          });
-        } catch (error) {
-          console.error("Erro ao decodificar token:", error);
-          setPermissions({
-            isAdmin: false,
-            isUser: false,
-            isLoading: false,
-          });
-        }
-      } else {
-        console.log("[usePermissions] Nenhum token encontrado");
-        setPermissions({
-          isAdmin: false,
-          isUser: false,
-          isLoading: false,
-        });
-      }
-    };
-
-    // Verificar imediatamente
-    checkAuth();
-
-    // Verificar novamente após um pequeno delay para garantir que os cookies foram definidos
-    const timeout = setTimeout(checkAuth, 100);
-
-    return () => clearTimeout(timeout);
-  }, []);
+  const { isAdmin, isUser, isLoading } = useAuth();
 
   return {
-    ...permissions,
-    canAccessAdmin: permissions.isAdmin,
-    canAccessEvents: permissions.isUser,
+    isAdmin,
+    isUser,
+    isLoading,
+    canAccessAdmin: isAdmin,
+    canAccessEvents: isUser,
   };
 }

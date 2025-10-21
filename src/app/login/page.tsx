@@ -8,9 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -41,7 +43,17 @@ export default function LoginPage() {
         return;
       }
 
-      console.log("Login bem-sucedido! Redirecionando...");
+      console.log("Login bem-sucedido! Salvando usuário...");
+      
+      // Salvar dados do usuário no contexto
+      login({
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+      });
+
+      console.log("Usuário salvo! Redirecionando...");
       window.location.href = "/dashboard";
       
     } catch (error) {

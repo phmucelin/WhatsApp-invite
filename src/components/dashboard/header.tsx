@@ -3,13 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import Image from "next/image";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export function DashboardHeader() {
-  const handleLogout = () => {
-    // Limpar cookie
-    document.cookie = "auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = "/login";
-  };
+  const { logout } = useAuth();
 
   return (
     <header className="h-16 border-b bg-white">
@@ -27,7 +24,7 @@ export function DashboardHeader() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={handleLogout}
+          onClick={logout}
         >
           <LogOut className="h-5 w-5" />
         </Button>
