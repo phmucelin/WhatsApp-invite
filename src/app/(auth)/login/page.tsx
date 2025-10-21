@@ -20,16 +20,31 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      console.log("Tentando fazer login com:", formData.get("email"));
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
       
-      await signIn("credentials", {
-        email: formData.get("email"),
-        password: formData.get("password"),
-        redirectTo: "/dashboard",
+      console.log("Tentando fazer login com:", email);
+      
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
+
+      console.log("Resultado do login:", result);
+
+      if (result?.error) {
+        toast.error("Email ou senha inválidos");
+        return;
+      }
+
+      if (result?.ok) {
+        console.log("Login bem-sucedido!");
+        window.location.href = "/dashboard";
+      }
     } catch (error) {
       console.error("Erro no login:", error);
-      toast.error(error instanceof Error ? error.message : "Algo deu errado");
+      toast.error("Erro ao fazer login");
     } finally {
       setIsLoading(false);
     }
