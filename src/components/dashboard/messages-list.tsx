@@ -13,12 +13,12 @@ import {
 } from "@/components/ui/table";
 import { Send, RotateCcw } from "lucide-react";
 import { formatPhoneNumber } from "@/lib/utils";
-import { GuestWithEvent, SendStatus } from "@/types/prisma";
+import { GuestWithEvent } from "@/types/prisma";
 import { toast } from "sonner";
 import { Filters } from "@/components/dashboard/filters";
 
 type StatsRecord = {
-  sendStatus: SendStatus;
+  sendStatus: string;
   _count: number;
 };
 
