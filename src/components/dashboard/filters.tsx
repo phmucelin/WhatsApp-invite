@@ -16,7 +16,9 @@ import { Search, Filter, X } from "lucide-react";
 interface Event {
   id: string;
   title: string;
-  guestCount: number;
+  _count?: {
+    guests: number;
+  };
 }
 
 interface FiltersProps {
@@ -56,10 +58,12 @@ export function Filters({
       const response = await fetch("/api/events/list");
       if (response.ok) {
         const data = await response.json();
-        setEvents(data.events);
+        // A API retorna um array diretamente, não um objeto com propriedade events
+        setEvents(data || []);
       }
     } catch (error) {
       console.error("Erro ao carregar eventos:", error);
+      setEvents([]); // Definir array vazio em caso de erro
     }
   }
 
@@ -128,9 +132,9 @@ export function Filters({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os eventos</SelectItem>
-                  {events.map((event) => (
+                  {events?.map((event) => (
                     <SelectItem key={event.id} value={event.id}>
-                      {event.title} ({event.guestCount} convidados)
+                      {event.title} ({event._count?.guests || 0} convidados)
                     </SelectItem>
                   ))}
                 </SelectContent>
