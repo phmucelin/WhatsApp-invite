@@ -23,18 +23,38 @@ export default function LoginPage() {
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
       
-      console.log("Tentando fazer login com:", email);
+      console.log("=== LOGIN DEBUG ===");
+      console.log("Email:", email);
+      console.log("Password:", password);
       
+      // Teste direto com a API
+      const response = await fetch("/api/debug-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      console.log("Resposta da API:", data);
+
+      if (!response.ok) {
+        toast.error(data.error || "Erro ao fazer login");
+        return;
+      }
+
+      // Se a API funcionou, tentar o NextAuth
       const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
       });
 
-      console.log("Resultado do login:", result);
+      console.log("Resultado NextAuth:", result);
 
       if (result?.error) {
-        toast.error("Email ou senha inválidos");
+        toast.error("Erro no NextAuth: " + result.error);
         return;
       }
 
