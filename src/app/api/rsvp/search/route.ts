@@ -16,14 +16,13 @@ export async function GET(request: Request) {
 
     console.log("[SEARCH_API] Buscando por:", query);
 
-    // Buscar por nome ou telefone
+    // Buscar por nome ou telefone (SQLite não suporta mode: "insensitive")
     const guests = await prisma.guest.findMany({
       where: {
         OR: [
           {
             name: {
               contains: query,
-              mode: "insensitive",
             },
           },
           {

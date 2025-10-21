@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -12,20 +13,20 @@ async function main() {
     await prisma.user.deleteMany();
     console.log("Banco de dados limpo");
 
-    // Cria as tabelas
-    await prisma.$executeRaw`CREATE TABLE IF NOT EXISTS "User" (
-      "id" TEXT NOT NULL,
-      "name" TEXT NOT NULL,
-      "email" TEXT NOT NULL,
-      "password" TEXT NOT NULL,
-      "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      "updatedAt" TIMESTAMP(3) NOT NULL,
-      CONSTRAINT "User_pkey" PRIMARY KEY ("id")
-    );`;
+    // Cria usuário de teste
+    const hashedPassword = await hash("123456", 10);
+    
+    const testUser = await prisma.user.create({
+      data: {
+        name: "Usuário Teste",
+        email: "teste@chaischool.com",
+        password: hashedPassword,
+        role: "ADMIN",
+      },
+    });
 
-    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "User_email_key" ON "User"("email");`;
-
-    console.log("Tabelas criadas com sucesso");
+    console.log("Usuário de teste criado:", testUser.email);
+    console.log("Senha: 123456");
   } catch (error) {
     console.error("Erro durante o seed:", error);
     process.exit(1);

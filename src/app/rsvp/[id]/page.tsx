@@ -34,87 +34,46 @@ export default function RsvpPage() {
       const guestId = Array.isArray(params.id) ? params.id[0] : params.id;
       console.log("[RSVP] Tentando carregar convidado com ID:", guestId);
 
-      // Tentativa 1: ID direto
-      let response = await fetch(`/api/rsvp/${guestId}`);
-      console.log("[RSVP] Tentativa 1 - ID direto:", response.status);
+      // Tentativa única: ID direto com retry
+      let attempts = 0;
+      const maxAttempts = 3;
+      
+      while (attempts < maxAttempts) {
+        try {
+          console.log(`[RSVP] Tentativa ${attempts + 1}/${maxAttempts}`);
+          
+          const response = await fetch(`/api/rsvp/${guestId}`, {
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            }
+          });
+          
+          console.log(`[RSVP] Status da resposta:`, response.status);
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("[RSVP] Convidado encontrado com ID direto:", data.name);
-        setGuest(data);
-        setHasResponded(data.rsvpStatus !== "WAITING");
-        return;
-      }
-
-      // Tentativa 2: Rota alternativa
-      response = await fetch(`/api/rsvp/guest?id=${guestId}`);
-      console.log("[RSVP] Tentativa 2 - Rota alternativa:", response.status);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(
-          "[RSVP] Convidado encontrado com rota alternativa:",
-          data.name
-        );
-        setGuest(data);
-        setHasResponded(data.rsvpStatus !== "WAITING");
-        return;
-      }
-
-      // Tentativa 3: Busca por nome (se o ID parecer um nome)
-      if (guestId && guestId.length > 10 && !guestId.includes("cmf")) {
-        console.log("[RSVP] Tentativa 3 - Buscando por nome:", guestId);
-        const searchResponse = await fetch(
-          `/api/rsvp/search?query=${encodeURIComponent(guestId)}`
-        );
-
-        if (searchResponse.ok) {
-          const searchData = await response.json();
-          if (searchData.guests && searchData.guests.length > 0) {
-            const foundGuest = searchData.guests[0];
-            console.log(
-              "[RSVP] Convidado encontrado por busca:",
-              foundGuest.name
-            );
-
-            // Redirecionar para o ID correto
-            router.replace(`/rsvp/${foundGuest.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            console.log("[RSVP] Convidado encontrado:", data.name);
+            setGuest(data);
+            setHasResponded(data.rsvpStatus !== "WAITING");
             return;
+          } else {
+            console.log(`[RSVP] Erro ${response.status}:`, response.statusText);
+            
+            // Se não é um erro de servidor, não tentar novamente
+            if (response.status < 500) {
+              break;
+            }
           }
+        } catch (fetchError) {
+          console.error(`[RSVP] Erro na tentativa ${attempts + 1}:`, fetchError);
         }
-      }
-
-      // Tentativa 4: Busca inteligente por todos os convidados
-      if (searchAttempts === 0) {
-        console.log(
-          "[RSVP] Tentativa 4 - Busca inteligente por todos os convidados"
-        );
-        setSearchAttempts(1);
-
-        const allGuestsResponse = await fetch("/api/rsvp/list");
-        if (allGuestsResponse.ok) {
-          const allGuestsData = await allGuestsResponse.json();
-          console.log(
-            "[RSVP] Total de convidados no sistema:",
-            allGuestsData.total
-          );
-
-          // Se há apenas um convidado, redirecionar para ele
-          if (allGuestsData.total === 1) {
-            const singleGuest = allGuestsData.guests[0];
-            console.log(
-              "[RSVP] Único convidado encontrado, redirecionando para:",
-              singleGuest.id
-            );
-            router.replace(`/rsvp/${singleGuest.id}`);
-            return;
-          }
-
-          // Se há múltiplos convidados, mostrar lista para escolha
-          if (allGuestsData.total > 1) {
-            showGuestSelection(allGuestsData.guests);
-            return;
-          }
+        
+        attempts++;
+        
+        // Aguardar um pouco antes da próxima tentativa
+        if (attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
 
@@ -123,11 +82,11 @@ export default function RsvpPage() {
       setGuest(null);
     } catch (error) {
       console.error("[RSVP_LOAD]", error);
-      alert("Erro ao carregar convite: " + error);
+      setGuest(null);
     } finally {
       setIsLoading(false);
     }
-  }, [params.id, router, searchAttempts]);
+  }, [params.id]);
 
   useEffect(() => {
     if (params.id) {

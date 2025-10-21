@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url = env("DATABASE_URL")
 }
 
@@ -18,7 +18,7 @@ model User {
   name          String
   email         String    @unique
   password      String
-  role          UserRole  @default(USER)
+  role          String    @default("USER")
   events        Event[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -45,8 +45,8 @@ model Guest {
   phoneNumber   String
   event         Event     @relation(fields: [eventId], references: [id])
   eventId       String
-  sendStatus    SendStatus @default(PENDING)
-  rsvpStatus    RsvpStatus @default(WAITING)
+  sendStatus    String    @default("PENDING")
+  rsvpStatus    String    @default("WAITING")
   resendCount   Int       @default(0)
   lastSentAt    DateTime?
   createdAt     DateTime  @default(now())
@@ -55,18 +55,3 @@ model Guest {
   @@unique([phoneNumber, eventId])
 }
 
-enum UserRole {
-  ADMIN
-  USER
-}
-
-enum SendStatus {
-  PENDING
-  SENT
-}
-
-enum RsvpStatus {
-  WAITING
-  CONFIRMED
-  DECLINED
-}

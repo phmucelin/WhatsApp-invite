@@ -5,8 +5,6 @@ export type {
   User,
   Event,
   Guest,
-  SendStatus,
-  RsvpStatus,
 } from "@prisma/client";
 
 // Tipos para Guest
@@ -23,8 +21,8 @@ export type GuestWithEvent = Prisma.GuestGetPayload<{
 
 // Tipo para Guest Status
 export type GuestStatus = {
-  sendStatus: SendStatus;
-  rsvpStatus: RsvpStatus;
+  sendStatus: string;
+  rsvpStatus: string;
 };
 
 // Tipos para Event
