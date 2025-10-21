@@ -36,8 +36,7 @@ export default function LoginPage() {
       }
 
       console.log("Login bem-sucedido, redirecionando...");
-      router.push("/dashboard");
-      router.refresh();
+      window.location.href = "/dashboard";
     } catch (error) {
       console.error("Erro no login:", error);
       toast.error(error instanceof Error ? error.message : "Algo deu errado");
