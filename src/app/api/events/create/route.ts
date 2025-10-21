@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { uploadImage } from "@/lib/blob";
 
@@ -8,13 +7,6 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = cookies();
-    const sessionId = cookieStore.get('user-session')?.value;
-
-    if (!sessionId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
     const formData = await request.formData();
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
@@ -58,7 +50,7 @@ export async function POST(request: Request) {
         location,
         message,
         imageUrl,
-        userId: sessionId,
+        userId: "temp-user", // Temporário até implementar autenticação
       },
     });
 

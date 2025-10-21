@@ -1,17 +1,9 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-
+// Hook temporário para permissões - será implementado com novo sistema de auth
 export function usePermissions() {
-  const { data: session } = useSession();
-
-  const isAdmin = session?.user?.role === "ADMIN";
-  const isUser = session?.user?.role === "USER";
-
   return {
-    isAdmin,
-    isUser,
-    canAccessAdmin: isAdmin,
-    canAccessEvents: isAdmin || isUser, // Ambos podem acessar eventos
+    isAdmin: false, // Temporário - sempre false até implementar novo sistema
+    isLoading: false,
   };
-} 
+}

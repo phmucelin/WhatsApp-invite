@@ -1,42 +1,11 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 
-// Força o endpoint a ser dinâmico
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  try {
-    const session = await getServerSession(authOptions);
+  return NextResponse.json({ message: "API temporária - sistema de auth sendo reconstruído" });
+}
 
-    if (!session?.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const messages = await prisma.guest.findMany({
-      where: {
-        event: {
-          userId: session.user.id,
-        },
-      },
-      include: {
-        event: {
-          select: {
-            title: true,
-            date: true,
-          },
-        },
-      },
-      orderBy: {
-        updatedAt: "desc",
-      },
-      take: 50,
-    });
-
-    return NextResponse.json(messages);
-  } catch (error) {
-    console.error("[MESSAGES_GET]", error);
-    return new NextResponse("Internal error", { status: 500 });
-  }
+export async function POST() {
+  return NextResponse.json({ message: "API temporária - sistema de auth sendo reconstruído" });
 }
