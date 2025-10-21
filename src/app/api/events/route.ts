@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
 // Força o endpoint a ser dinâmico
@@ -8,15 +7,16 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const cookieStore = cookies();
+    const sessionId = cookieStore.get('user-session')?.value;
 
-    if (!session?.user) {
+    if (!sessionId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const events = await prisma.event.findMany({
       where: {
-        userId: session.user.id,
+        userId: sessionId, // Usar sessionId como userId
       },
       select: {
         id: true,

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { uploadImage } from "@/lib/blob";
 
@@ -9,9 +8,10 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const cookieStore = cookies();
+    const sessionId = cookieStore.get('user-session')?.value;
 
-    if (!session?.user) {
+    if (!sessionId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
         location,
         message,
         imageUrl,
-        userId: session.user.id,
+        userId: sessionId,
       },
     });
 

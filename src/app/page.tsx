@@ -7,8 +7,8 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redireciona automaticamente para a página de login
-    router.replace("/login");
+    // Redireciona automaticamente para a página de welcome
+    router.replace("/welcome");
   }, [router]);
 
   return (

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/components/providers/session-provider";
 import { SonnerProvider } from "@/components/providers/sonner-provider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -38,10 +37,8 @@ export default function RootLayout({
       <body
         className={`${inter.className} min-h-full bg-background text-foreground antialiased`}
       >
-        <AuthProvider>
-          {children}
-          <SonnerProvider />
-        </AuthProvider>
+        {children}
+        <SonnerProvider />
       </body>
     </html>
   );
