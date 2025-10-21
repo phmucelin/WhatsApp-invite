@@ -76,7 +76,7 @@ Você está convidado(a) para o evento: *${guest.event.title}*
 📍 Local: ${guest.event.location}
 
 Para confirmar sua presença, clique no link abaixo:
-${process.env.NEXTAUTH_URL || 'https://your-project.vercel.app'}/rsvp/${guest.id}
+https://chaischool-convites.vercel.app/rsvp/${guest.id}
 
 Esperamos você! 🎊`;
 
