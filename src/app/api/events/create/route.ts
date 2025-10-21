@@ -1,12 +1,36 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { uploadImage } from "@/lib/blob";
+import { cookies } from "next/headers";
 
 // Força o endpoint a ser dinâmico
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
+    // Verificar autenticação
+    const cookieStore = cookies();
+    const authToken = cookieStore.get('auth-token');
+    
+    if (!authToken) {
+      return NextResponse.json(
+        { error: "Não autenticado" },
+        { status: 401 }
+      );
+    }
+
+    // Decodificar token
+    let userData;
+    try {
+      const tokenData = JSON.parse(Buffer.from(authToken.value, 'base64').toString());
+      userData = tokenData;
+    } catch (error) {
+      return NextResponse.json(
+        { error: "Token inválido" },
+        { status: 401 }
+      );
+    }
+
     const formData = await request.formData();
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
@@ -50,7 +74,7 @@ export async function POST(request: Request) {
         location,
         message,
         imageUrl,
-        userId: "temp-user", // Temporário até implementar autenticação
+        userId: userData.id, // Usar ID do usuário autenticado
       },
     });
 
