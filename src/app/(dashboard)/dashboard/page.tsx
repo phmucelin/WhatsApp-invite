@@ -20,7 +20,7 @@ export default function DashboardPage() {
       const response = await fetch("/api/events/list");
       if (response.ok) {
         const data = await response.json();
-        setEvents(data.events);
+        setEvents(data); // A API retorna diretamente o array
       }
     } catch (error) {
       console.error("Erro ao carregar eventos:", error);
@@ -34,19 +34,19 @@ export default function DashboardPage() {
     fetchEvents();
   }, []);
 
-  const totalEvents = events.length;
-  const totalInvites = events.reduce(
-    (acc: number, event: EventWithGuests) => acc + event._count.guests,
+  const totalEvents = events?.length || 0;
+  const totalInvites = events?.reduce(
+    (acc: number, event: EventWithGuests) => acc + (event._count?.guests || 0),
     0
-  );
-  const totalConfirmed = events.reduce(
+  ) || 0;
+  const totalConfirmed = events?.reduce(
     (acc: number, event: EventWithGuests) =>
       acc +
-      event.guests.filter(
+      (event.guests?.filter(
         (guest: GuestStatus) => guest.rsvpStatus === "CONFIRMED"
-      ).length,
+      ).length || 0),
     0
-  );
+  ) || 0;
 
   return (
     <div className="main-container">
@@ -116,7 +116,7 @@ export default function DashboardPage() {
                   <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
                   <p className="mt-2 text-gray-600">Carregando eventos...</p>
                 </div>
-              ) : events.length === 0 ? (
+              ) : !events || events.length === 0 ? (
                 <div className="py-8 text-center text-gray-500">
                   Nenhum evento criado ainda.
                 </div>
@@ -129,7 +129,7 @@ export default function DashboardPage() {
                     <DeleteEvent
                       eventId={event.id}
                       eventTitle={event.title}
-                      guestCount={event._count.guests}
+                      guestCount={event._count?.guests || 0}
                       onDelete={fetchEvents}
                     />
                   </CardHeader>
@@ -168,24 +168,24 @@ export default function DashboardPage() {
                       </p>
                       <div className="flex gap-4 text-sm">
                         <p>
-                          <strong>Convidados:</strong> {event._count.guests}
+                          <strong>Convidados:</strong> {event._count?.guests || 0}
                         </p>
                         <p>
                           <strong>Confirmados:</strong>{" "}
                           {
-                            event.guests.filter(
+                            event.guests?.filter(
                               (guest: GuestStatus) =>
                                 guest.rsvpStatus === "CONFIRMED"
-                            ).length
+                            ).length || 0
                           }
                         </p>
                         <p>
                           <strong>Enviados:</strong>{" "}
                           {
-                            event.guests.filter(
+                            event.guests?.filter(
                               (guest: GuestStatus) =>
                                 guest.sendStatus === "SENT"
-                            ).length
+                            ).length || 0
                           }
                         </p>
                       </div>
