@@ -6,32 +6,41 @@ import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface ClearContactsProps {
+  eventId?: string;
   onClear?: () => void;
 }
 
-export function ClearContacts({ onClear }: ClearContactsProps) {
+export function ClearContacts({ eventId, onClear }: ClearContactsProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleClear() {
-    if (!confirm("Tem certeza que deseja remover TODOS os contatos/convidados? Esta ação não pode ser desfeita.")) {
+    const message = eventId 
+      ? "Tem certeza que deseja remover TODOS os contatos/convidados deste evento? Esta ação não pode ser desfeita."
+      : "Tem certeza que deseja remover TODOS os contatos/convidados de TODOS os eventos? Esta ação não pode ser desfeita.";
+      
+    if (!confirm(message)) {
       return;
     }
 
     try {
       setIsLoading(true);
       const response = await fetch("/api/contacts/clear", {
-        method: "POST",
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ eventId: eventId || "all" }),
       });
 
       if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error);
+        const error = await response.json();
+        throw new Error(error.error || "Erro ao limpar contatos");
       }
 
       const result = await response.json();
       console.log("[CLEAR_CONTACTS] Resultado:", result);
       
-      toast.success(`Todos os contatos foram removidos com sucesso! ${result.deletedGuests} convidados removidos.`);
+      toast.success(result.message || `Todos os contatos foram removidos com sucesso! ${result.count} convidados removidos.`);
       
       // Força atualização da página para garantir que os dados sejam limpos
       if (onClear) {

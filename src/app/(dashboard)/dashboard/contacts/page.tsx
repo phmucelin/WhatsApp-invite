@@ -29,6 +29,7 @@ export default function ContactsPage() {
   const [contacts, setContacts] = useState<Guest[]>([]);
   const [filteredContacts, setFilteredContacts] = useState<Guest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedEventId, setSelectedEventId] = useState<string>("all");
   const [stats, setStats] = useState<{
     total: number;
     sent: number;
@@ -74,6 +75,9 @@ export default function ContactsPage() {
 
   const handleFiltersChange = useCallback(
     (filters: FiltersType) => {
+      // Atualizar o evento selecionado
+      setSelectedEventId(filters.eventId);
+      
       let filtered = [...contacts];
 
       // Filtro por nome
@@ -128,7 +132,12 @@ export default function ContactsPage() {
             </div>
             <div className="flex items-center gap-4">
               <ContactUpload />
-              <ClearContacts />
+              {selectedEventId !== "all" && (
+                <ClearContacts 
+                  eventId={selectedEventId} 
+                  onClear={loadContacts} 
+                />
+              )}
             </div>
           </div>
 
