@@ -22,21 +22,11 @@ export default function LoginPage() {
       const formData = new FormData(e.currentTarget);
       console.log("Tentando fazer login com:", formData.get("email"));
       
-      const response = await signIn("credentials", {
+      await signIn("credentials", {
         email: formData.get("email"),
         password: formData.get("password"),
-        redirect: false,
+        redirectTo: "/dashboard",
       });
-
-      console.log("Resposta do signIn:", response);
-
-      if (response?.error) {
-        console.error("Erro no login:", response.error);
-        throw new Error("Email ou senha inválidos");
-      }
-
-      console.log("Login bem-sucedido, redirecionando...");
-      window.location.href = "/dashboard";
     } catch (error) {
       console.error("Erro no login:", error);
       toast.error(error instanceof Error ? error.message : "Algo deu errado");
